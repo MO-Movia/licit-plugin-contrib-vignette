@@ -358,6 +358,7 @@ class VignetteView extends CustomNodeView {
   createDOMElement(): HTMLElement {
     const el = document.createElement('span');
     el.style.backgroundColor = 'lightgrey';
+    el.style.position = 'relative';
 
     this._updateDOM(el, MIN_WIDTH, MIN_HEIGHT);
     return el;
@@ -368,7 +369,7 @@ class VignetteView extends CustomNodeView {
     return <VignetteViewBody {...this.props} />;
   }
 
-  _updateDOM(el: HTMLElement, width: Number, height: Number): void {
+  _updateDOM(el: HTMLElement, width: number, height: number): void {
     const {align} = this.props.node.attrs;
     let className = 'molv-czi-vignette-view';
     if (align) {
@@ -378,9 +379,13 @@ class VignetteView extends CustomNodeView {
     el.style.width = width + 'px';
     el.style.height = height + 'px';
 
+    this.updateInnerDOM(width, height);
+  }
+
+  updateInnerDOM(width: number, height: number): void {
     if (this.innerView) {
-      this.innerView.dom.style.width = width + 'px';
-      this.innerView.dom.style.height = height + 'px';
+      this.innerView.dom.style.width = width - 10 + 'px';
+      this.innerView.dom.style.height = height - 10 + 'px';
     }
   }
 
@@ -501,6 +506,13 @@ class VignetteView extends CustomNodeView {
         },
       }
     );
+
+    if (this.innerView) {
+      this.innerView.dom.style.position = 'absolute';
+      this.innerView.dom.style.left = '5px';
+      this.innerView.dom.style.top = '5px';
+      this.updateInnerDOM(this.props.node.attrs.width, this.props.node.attrs.height);
+    }
   }
 
   skipPlugins(plugin: Plugin) {
