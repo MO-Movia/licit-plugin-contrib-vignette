@@ -356,12 +356,9 @@ class VignetteView extends CustomNodeView {
   // @override
   createDOMElement(): HTMLElement {
     const el = document.createElement('span');
-    el.className = 'molv-czi-vignette-view';
     el.style.backgroundColor = 'lightgrey';
-    el.style.width = MIN_WIDTH + 'px';
-    el.style.height = MIN_HEIGHT + 'px';
 
-    this._updateDOM(el);
+    this._updateDOM(el, MIN_WIDTH, MIN_HEIGHT);
     return el;
   }
 
@@ -370,13 +367,15 @@ class VignetteView extends CustomNodeView {
     return <VignetteViewBody {...this.props} />;
   }
 
-  _updateDOM(el: HTMLElement): void {
+  _updateDOM(el: HTMLElement, width: Number, height: Number): void {
     const { align } = this.props.node.attrs;
     let className = 'molv-czi-vignette-view';
     if (align) {
       className += ' align-' + align;
     }
     el.className = className;
+    el.style.width = width + 'px';
+    el.style.height = height + 'px';
   }
 
   initialize(node: Node, editorView: EditorView, getPos: () => number): void {
@@ -412,6 +411,8 @@ class VignetteView extends CustomNodeView {
 
   // @override
   update(node: Node, decorations: Array<Decoration>): boolean {
+    super.update(node, decorations);
+    this._updateDOM(this.dom, node.attrs.width, node.attrs.height);
     if (!node.sameMarkup(this.props.node)) return false;
     if (this.innerView) {
       const state = this.innerView.state;
@@ -430,13 +431,11 @@ class VignetteView extends CustomNodeView {
         );
       }
     }
-    super.update(node, decorations);
-    this._updateDOM(this.dom);
     return true;
   }
 
   selectNode() {
-    if (!this.innerView) this.open();
+    //if (!this.innerView) this.open();
     super.selectNode();
   }
 
@@ -505,8 +504,10 @@ class VignetteView extends CustomNodeView {
     if (0 < this.dom.children.length) {
       html = this.dom.children[0].innerHTML;
     }
-    this.innerView.destroy();
-    this.innerView = null;
+    if (this.innerView) {
+      this.innerView.destroy();
+      this.innerView = null;
+    }
     this.dom.innerHTML = html;
   }
 

@@ -17,7 +17,7 @@ const VignetteNodeSpec: NodeSpec = {
   inline: true,///
   parseDOM: [
     {
-      tag: 'div.vignette',
+      tag: 'span.vignette',
       getAttrs(dom: HTMLElement) {
         const { cssFloat, display } = dom.style;
         let align = dom.getAttribute('data-align') || dom.getAttribute('align');
@@ -42,7 +42,7 @@ const VignetteNodeSpec: NodeSpec = {
     },
   ],
   toDOM(node) {
-    return ['div', node.attrs, 0];
+    return ['span', node.attrs, 0];
   },
 };
 
