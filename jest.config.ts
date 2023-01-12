@@ -36,7 +36,6 @@ export default {
   // A list of reporter names that Jest uses when writing coverage reports
   coverageReporters: [
     //   "json",
-    //   "text",
     'text',
     'cobertura',
     'lcov',
@@ -44,7 +43,7 @@ export default {
   ],
 
   // An object that configures minimum threshold enforcement for coverage results
-  coverageThreshold: {global: {branches: 80, functions: 80, lines: 80}},
+  coverageThreshold: {global:{branches:80,functions:80,lines:80,},},
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
@@ -105,14 +104,16 @@ export default {
   // Use this configuration option to add custom reporters to Jest
   reporters: [
     'default',
-    [
-      'jest-junit',
-      {
-        outputDirectory: 'coverage',
-        outputName: 'TESTS.xml',
-      },
-    ],
-  ],
+      [
+        'jest-junit',
+        {
+          outputDirectory: 'coverage',
+          outputName: 'TESTS.xml'
+        }
+      ]
+    ]
+    ,
+
   // Automatically reset mock state between every test
   // resetMocks: false,
 
@@ -164,9 +165,8 @@ export default {
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-  // testPathIgnorePatterns: [
-  //   "/node_modules/"
-  // ],
+  testPathIgnorePatterns:
+    [ "/node_modules/"],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   //testRegex: ["((\\.|/*.)(test))\\.ts?$"],

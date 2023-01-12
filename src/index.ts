@@ -1,25 +1,27 @@
 // Plugin to handle Citation.
-import {Plugin, PluginKey} from 'prosemirror-state';
-import {EditorView} from 'prosemirror-view';
-import {Node, Schema} from 'prosemirror-model';
-import {VignettekView} from './VignetteView';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Node, Schema } from 'prosemirror-model';
 import OrderedMap from 'orderedmap';
 import VignetteNodeSpec from './VignetteNodeSpec';
-import {VIGNETTE} from './Constants';
+import { VIGNETTE } from './Constants';
 import VignetteCommand from './VignetteCommand';
+import * as React from 'react';
+import VignetteView from './ui/VignetteView';
+import { EditorFocused } from './ui/CustomNodeView';
 
 // singleton instance of VignettePlugin
 let siVignettePlugin: VignettePlugin;
 
 export class VignettePlugin extends Plugin {
   _view: EditorView = null;
-  constructor() {
+  constructor(licit: typeof React.Component) {
     super({
       key: new PluginKey('VignettePlugin'),
       state: {
         init(_config, _state) {
           siVignettePlugin.spec.props.nodeViews[VIGNETTE] =
-            bindVignetteView.bind(this);
+            bindVignetteView.bind(this, licit);
         },
         apply(_tr, _set) {
           //do nothing
@@ -55,9 +57,10 @@ export class VignettePlugin extends Plugin {
 }
 
 export function bindVignetteView(
+  _licit: typeof React.Component,
   node: Node,
   view: EditorView,
   curPos: () => number
-): VignettekView {
-  return new VignettekView(node, view, curPos);
+): VignetteView {
+  return new VignetteView(node, view as EditorFocused, curPos, undefined);
 }

@@ -1,0 +1,127 @@
+@import url("./czi-vars.css");
+
+.molv-czi-vignette-view {
+  clear: both;
+  display: inline-block;
+  line-height: 0;
+  margin: 0 2px; /* This should be synced to the constant VIGNETTE_MARGIN in JS. */
+  max-width: 100%;
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.molv-czi-vignette-view.ProseMirror-selectednode {
+  outline: none;
+}
+
+.molv-czi-vignette-view.align-left {
+  float: left;
+  margin: 0 40px 20px 0;
+}
+
+.molv-czi-vignette-view.align-right {
+  float: right;
+  margin: 0 0 20px 40px;
+}
+
+.molv-czi-vignette-view.align-center {
+  clear: both;
+  display: block;
+  float: none;
+  margin: 20px 0;
+}
+
+.molv-czi-vignette-view-body-img-clip {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.molv-czi-vignette-view-body {
+  clear: both;
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+}
+
+.molv-czi-vignette-view-body.loading::before {
+  animation: czi-animation-blink normal 800ms infinite ease-in-out;
+  background-color: #cdcdcd;
+  bottom: 0;
+  content: "";
+  cursor: wait;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 3;
+}
+
+.molv-czi-vignette-view-body.error::before {
+  background-color: #fff;
+  bottom: 0;
+  content: "";
+  left: 0;
+  outline: solid 1px #cdcdcd;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 3;
+}
+
+.molv-czi-vignette-view-body .molv-czi-icon.error {
+  color: red;
+  font-size: 22px;
+  left: 50%;
+  margin: -11px 0 0 -11px;
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+}
+
+.molv-czi-vignette-view-body.selected::after {
+  /* simulated selection highlight */
+  background-color: var(--czi-selection-highlight-color-dark);
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+
+.molv-czi-vignette-view-body.active.selected::after {
+  /* hide the highlight so user can resize the image easily. */
+  display: none;
+}
+
+.molv-czi-vignette-view-body.active {
+  background-color: transparent;
+  box-shadow: 0 0 0 2px var(--czi-selection-highlight-color-dark);
+}
+
+.molv-czi-vignette-view-body.error {
+  /* outline: var(--czi-border-red); */
+}
+
+@media only print {
+  .molv-czi-vignette-view-body.active {
+    box-shadow: none;
+  }
+}
+
+@keyframes czi-animation-blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

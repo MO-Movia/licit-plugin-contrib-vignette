@@ -6,7 +6,7 @@ import {
 } from '@modusoperandi/licit-ui-commands';
 
 import './czi-form.css';
-import './czi-video-url-editor.css';
+import './czi-vignette-url-editor.css';
 
 type VignetteEditorProps = {
   initialValue;
@@ -54,20 +54,20 @@ class VignetteEditor extends React.PureComponent<
     const {width, height} = this.state;
 
     return (
-      <div className="czi-image-url-editor">
+      <div className="czi-vignette-url-editor">
         <form className="czi-form" onSubmit={preventEventDefault}>
           <fieldset>
             <legend>
               <b>Insert Vignette</b>
             </legend>
-            <div className="czi-image-url-editor-src-input-row"></div>
+            <div className="czi-vignette-url-editor-src-input-row"></div>
           </fieldset>
           <fieldset></fieldset>
           <fieldset>
             <legend>Width</legend>
-            <div className="czi-image-url-editor-src-input-row">
+            <div className="czi-vignette-url-editor-src-input-row">
               <input
-                className="czi-image-url-editor-src-input"
+                className="czi-vignette-url-editor-src-input"
                 onChange={this._onWidthChange}
                 placeholder="Width"
                 type="text"
@@ -77,9 +77,9 @@ class VignetteEditor extends React.PureComponent<
           </fieldset>
           <fieldset>
             <legend>Height</legend>
-            <div className="czi-image-url-editor-src-input-row">
+            <div className="czi-vignette-url-editor-src-input-row">
               <input
-                className="czi-image-url-editor-src-input"
+                className="czi-vignette-url-editor-src-input"
                 onChange={this._onHeightChange}
                 placeholder="Height"
                 type="text"

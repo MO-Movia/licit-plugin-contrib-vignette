@@ -6,6 +6,7 @@ module.exports = {
     codeFrame: true,
     ecmaFeatures: {
       jsx: true,
+      tsx: true,
     },
   },
   plugins: ['@typescript-eslint', 'react'],
@@ -59,6 +60,7 @@ module.exports = {
     HTMLInputElement: false,
     Image: false,
     JSX: false,
+    TSX: false,
     localStorage: false,
     Map: false,
     DragEvent: false,
@@ -84,11 +86,13 @@ module.exports = {
     DataTransfer: false,
     Node: false,
     SVGElement: false,
+    structuredClone: false,
     HTMLTableElement: false,
     HTMLTableColElement: false,
     HTMLTableSectionElement: false,
     MutationRecord: false,
     URL: false,
+    React:false,
   },
   overrides: [
     {

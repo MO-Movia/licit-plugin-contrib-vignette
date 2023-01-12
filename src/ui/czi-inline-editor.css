@@ -1,0 +1,20 @@
+@import url("./czi-vars.css");
+
+.molv-czi-inline-editor {
+  background: #fff;
+  box-shadow: var(--czi-overlay-shadow);
+  display: flex;
+  flex-direction: row;
+  margin-top: 6px;
+  padding: 4px 10px;
+}
+
+.molv-czi-inline-editor .molv-czi-custom-button {
+  border: none;
+}
+
+@media only print {
+  .molv-czi-inline-editor {
+    display: none;
+  }
+}

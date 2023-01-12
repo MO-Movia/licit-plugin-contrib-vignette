@@ -1,6 +1,6 @@
 @import url("./czi-vars.css");
 
-.czi-image-url-editor {
+.czi-vignette-url-editor {
   background: #fff;
   box-shadow: var(--czi-overlay-shadow);
   font-family: var(--czi-font-family);
@@ -8,21 +8,21 @@
   padding: 4px 10px;
 }
 
-.czi-image-url-editor .czi-form {
+.czi-vignette-url-editor .czi-form {
   max-width: 90vw;
   min-width: 40vw;
   width: 500px;
 }
 
-.czi-image-url-editor-src-input-row {
+.czi-vignette-url-editor-src-input-row {
   position: relative;
 }
 
-.czi-image-url-editor-src-input-row input.czi-image-url-editor-src-input {
+.czi-vignette-url-editor-src-input-row input.czi-vignette-url-editor-src-input {
   padding-right: 40px;
 }
 
-.czi-image-url-editor-input-preview {
+.czi-vignette-url-editor-input-preview {
   background-color: #fff;
   background-position: center;
   background-repeat: no-repeat;
