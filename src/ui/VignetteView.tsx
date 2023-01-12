@@ -353,8 +353,6 @@ class VignetteViewBody extends React.PureComponent {
 class VignetteView extends CustomNodeView {
   outerView: EditorView;
   innerView: EditorView;
-  node: Node;
-  getPos: () => number;
 
   // @override
   createDOMElement(): HTMLElement {
@@ -379,11 +377,14 @@ class VignetteView extends CustomNodeView {
     el.className = className;
     el.style.width = width + 'px';
     el.style.height = height + 'px';
+
+    if (this.innerView) {
+      this.innerView.dom.style.width = width + 'px';
+      this.innerView.dom.style.height = height + 'px';
+    }
   }
 
   initialize(node: Node, editorView: EditorView, getPos: () => number): void {
-    this.node = node;
-    this.getPos = getPos;
     this.dom.style.height = node.attrs.width;
     this.dom.style.width = node.attrs.height;
     this.dom.style.backgroundColor = node.attrs.backgroundColor;
@@ -402,7 +403,7 @@ class VignetteView extends CustomNodeView {
 
     if (!tr.getMeta('fromOutside')) {
       const outerTr = this.outerView.state.tr,
-        offsetMap = StepMap.offset(this.getPos() + 1);
+        offsetMap = StepMap.offset(this.props.getPos() + 1);
       for (let i = 0; i < transactions.length; i++) {
         const steps = transactions[i].steps;
         for (let j = 0; j < steps.length; j++)
@@ -455,10 +456,11 @@ class VignetteView extends CustomNodeView {
     if (!this.outerView) {
       this.outerView = this.props.editorView;
     }
-    this.node = this.props.node;
 
     const span = document.createElement('span');
-    span.style.display = 'inline-block';
+    //span.style.display = 'inline-block';
+    span.style.width = this.props.node.attrs.width + 'px';
+    span.style.height = this.props.node.attrs.height + 'px';
 
     this.dom.appendChild(span);
 
