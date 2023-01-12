@@ -1,24 +1,27 @@
 import cx from 'classnames';
-import { DOMSerializer, Node } from 'prosemirror-model';
-import { EditorView, Decoration } from 'prosemirror-view';
-import { EditorState, NodeSelection, Plugin } from 'prosemirror-state';
-import { StepMap } from 'prosemirror-transform';
-import { undo, redo } from 'prosemirror-history';
-import { keymap } from 'prosemirror-keymap';
+import {DOMSerializer, Node} from 'prosemirror-model';
+import {EditorView, Decoration} from 'prosemirror-view';
+import {EditorState, NodeSelection, Plugin} from 'prosemirror-state';
+import {StepMap} from 'prosemirror-transform';
+import {undo, redo} from 'prosemirror-history';
+import {keymap} from 'prosemirror-keymap';
 
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 
 import CustomNodeView from './CustomNodeView';
-import VignetteResizeBox, { MIN_SIZE } from './VignetteResizeBox';
-import { atAnchorBottomCenter, createPopUp } from '@modusoperandi/licit-ui-commands';
+import VignetteResizeBox, {MIN_SIZE} from './VignetteResizeBox';
+import {
+  atAnchorBottomCenter,
+  createPopUp,
+} from '@modusoperandi/licit-ui-commands';
 import ResizeObserver from './ResizeObserver';
 import uuid from './uuid';
 
 import './czi-vignette-view.css';
 
-import type { NodeViewProps } from './CustomNodeView';
-import type { ResizeObserverEntry } from './ResizeObserver';
+import type {NodeViewProps} from './CustomNodeView';
+import type {ResizeObserverEntry} from './ResizeObserver';
 import VignetteInlineEditor from './VignetteInlineEditor';
 const FRAMESET_BODY_CLASSNAME = 'czi-editor-frame-body';
 const EMPTY_SRC =
@@ -39,7 +42,6 @@ export type videoStyleType = {
   width?;
   position?;
 };
-
 
 /* This value must be synced with the margin defined at .czi-vignette-view */
 const VIGNETTE_MARGIN = 2;
@@ -70,7 +72,7 @@ function getMaxResizeWidth(el): number {
     node.offsetParent.offsetWidth &&
     node.offsetParent.offsetWidth > 0
   ) {
-    const { offsetParent } = node;
+    const {offsetParent} = node;
     const style = el.ownerDocument.defaultView.getComputedStyle(offsetParent);
     let width = offsetParent.clientWidth - VIGNETTE_MARGIN * 2;
     if (style.boxSizing === 'border-box') {
@@ -83,7 +85,6 @@ function getMaxResizeWidth(el): number {
   // Let the image resize freely.
   return MAX_SIZE;
 }
-
 
 class VignetteViewBody extends React.PureComponent {
   props: NodeViewProps;
@@ -116,8 +117,8 @@ class VignetteViewBody extends React.PureComponent {
 
   componentDidUpdate(prevProps: NodeViewProps): void {
     const prevSrc = prevProps.node.attrs.src;
-    const { node } = this.props;
-    const { src } = node.attrs;
+    const {node} = this.props;
+    const {src} = node.attrs;
     if (prevSrc !== src) {
       // A new image is provided, resolve it.
       this._resolveOriginalSize();
@@ -126,11 +127,11 @@ class VignetteViewBody extends React.PureComponent {
   }
 
   render(): React.ReactElement {
-    const { originalSize, maxSize } = this.state;
-    const { editorView, node, selected, focused } = this.props;
-    const { readOnly } = editorView;
-    const { attrs } = node;
-    const { crop, rotate } = attrs;
+    const {originalSize, maxSize} = this.state;
+    const {editorView, node, selected, focused} = this.props;
+    const {readOnly} = editorView;
+    const {attrs} = node;
+    const {crop, rotate} = attrs;
 
     // It's only active when the image's fully loaded.
     const loading = false;
@@ -139,7 +140,7 @@ class VignetteViewBody extends React.PureComponent {
     const aspectRatio = loading ? 1 : originalSize.width / originalSize.height;
     const error = !loading && !originalSize.complete;
 
-    let { width, height } = attrs;
+    let {width, height} = attrs;
 
     if (loading) {
       width = width || VIGNETTE_PLACEHOLDER_SIZE;
@@ -193,7 +194,7 @@ class VignetteViewBody extends React.PureComponent {
 
     const clipStyle: clipStyleType = {};
     if (crop) {
-      const cropped = { ...crop };
+      const cropped = {...crop};
       if (scale !== 1) {
         scale = maxSize.width / cropped.width;
         cropped.width *= scale;
@@ -215,11 +216,13 @@ class VignetteViewBody extends React.PureComponent {
       <span
         className={className}
         data-active={active ? 'true' : undefined}
-
         id={this._id}
         ref={this._onBodyRef}
       >
-        <span className="molv-czi-vignette-view-body-img-clip" style={clipStyle}>
+        <span
+          className="molv-czi-vignette-view-body-img-clip"
+          style={clipStyle}
+        >
           <span style={vignettesStyle}></span>
         </span>
         {resizeBox}
@@ -234,7 +237,7 @@ class VignetteViewBody extends React.PureComponent {
       return;
     }
 
-    const { node } = this.props;
+    const {node} = this.props;
     const editorProps = {
       value: node.attrs,
       onSelect: this._onChange,
@@ -260,17 +263,17 @@ class VignetteViewBody extends React.PureComponent {
       return;
     }
 
-    this.setState({ originalSize: DEFAULT_ORIGINAL_SIZE });
+    this.setState({originalSize: DEFAULT_ORIGINAL_SIZE});
     const originalSize = DEFAULT_ORIGINAL_SIZE;
     if (!this._mounted) {
       // unmounted;
       return;
     }
-    this.setState({ originalSize });
+    this.setState({originalSize});
   };
 
   _onResizeEnd = (width: number, height: number): void => {
-    const { getPos, node, editorView } = this.props;
+    const {getPos, node, editorView} = this.props;
     const pos = getPos();
     const attrs = {
       ...node.attrs,
@@ -280,7 +283,7 @@ class VignetteViewBody extends React.PureComponent {
     };
 
     let tr = editorView.state.tr;
-    const { selection } = editorView.state;
+    const {selection} = editorView.state;
     tr = tr.setNodeMarkup(pos, null, attrs);
     // [FS] IRAD-1005 2020-07-09
     // Upgrade outdated packages.
@@ -290,13 +293,13 @@ class VignetteViewBody extends React.PureComponent {
     editorView.dispatch(tr);
   };
 
-  _onChange = (value: { align: string }): void => {
+  _onChange = (value: {align: string}): void => {
     if (!this._mounted) {
       return;
     }
 
     const align = value ? value.align : null;
-    const { getPos, node, editorView } = this.props;
+    const {getPos, node, editorView} = this.props;
     const pos = getPos();
     const attrs = {
       ...node.attrs,
@@ -304,7 +307,7 @@ class VignetteViewBody extends React.PureComponent {
     };
 
     let tr = editorView.state.tr;
-    const { selection } = editorView.state;
+    const {selection} = editorView.state;
     tr = tr.setNodeMarkup(pos, null, attrs);
     // [FS] IRAD-1005 2020-07-09
     // Upgrade outdated packages.
@@ -368,7 +371,7 @@ class VignetteView extends CustomNodeView {
   }
 
   _updateDOM(el: HTMLElement, width: Number, height: Number): void {
-    const { align } = this.props.node.attrs;
+    const {align} = this.props.node.attrs;
     let className = 'molv-czi-vignette-view';
     if (align) {
       className += ' align-' + align;
@@ -435,13 +438,13 @@ class VignetteView extends CustomNodeView {
   }
 
   selectNode() {
-    //if (!this.innerView) this.open();
+    if (!this.innerView) this.open();
     super.selectNode();
   }
 
   deselectNode() {
     if (this.innerView) this.close();
-    super.selectNode();
+    super.deselectNode();
   }
 
   ignoreMutation() {
@@ -451,8 +454,8 @@ class VignetteView extends CustomNodeView {
   open() {
     if (!this.outerView) {
       this.outerView = this.props.editorView;
-      this.node = this.props.node;
     }
+    this.node = this.props.node;
 
     const span = document.createElement('span');
     span.style.display = 'inline-block';
@@ -465,37 +468,46 @@ class VignetteView extends CustomNodeView {
       plugin.spec.state = undefined;
     });
 
-    this.innerView = new EditorView({ mount: span }, {
-      editable: () => this.outerView.editable,
-      state: EditorState.create({
-        doc: this.node,
-        schema: this.outerView.state.schema,
-        plugins: [
-          ...plugins,
-          keymap({
-            'Mod-z': () => undo(this.outerView.state, this.outerView.dispatch),
-            'Mod-y': () => redo(this.outerView.state, this.outerView.dispatch),
-          }),
-        ],
-      }),
-      // This is the magic part
-      dispatchTransaction: this.dispatchInner.bind(this),
-      handleDOMEvents: {
-        mousedown: () => {
-          // Kludge to prevent issues due to the fact that the whole
-          // footnote is node-selected (and thus DOM-selected) when
-          // the parent editor is focused.
-          if (this.outerView.hasFocus()) {
-            this.innerView.focus();
-          }
+    this.innerView = new EditorView(
+      {mount: span},
+      {
+        editable: () => this.outerView.editable,
+        state: EditorState.create({
+          doc: this.node,
+          schema: this.outerView.state.schema,
+          plugins: [
+            ...plugins,
+            keymap({
+              'Mod-z': () =>
+                undo(this.outerView.state, this.outerView.dispatch),
+              'Mod-y': () =>
+                redo(this.outerView.state, this.outerView.dispatch),
+            }),
+          ],
+        }),
+        // This is the magic part
+        dispatchTransaction: this.dispatchInner.bind(this),
+        handleDOMEvents: {
+          mousedown: () => {
+            // Kludge to prevent issues due to the fact that the whole
+            // footnote is node-selected (and thus DOM-selected) when
+            // the parent editor is focused.
+            if (this.outerView.hasFocus()) {
+              this.innerView.focus();
+            }
+          },
         },
-      },
-    });
+      }
+    );
   }
 
   skipPlugins(plugin: Plugin) {
-    const keys = ['EditorPageLayoutPlugin', 'tableColumnResizing', 'VignettePlugin'];
-    const skip = keys.some(v => plugin['key'].includes(v));
+    const keys = [
+      'EditorPageLayoutPlugin',
+      'tableColumnResizing',
+      'VignettePlugin',
+    ];
+    const skip = keys.some((v) => plugin['key'].includes(v));
     return !skip;
   }
 
