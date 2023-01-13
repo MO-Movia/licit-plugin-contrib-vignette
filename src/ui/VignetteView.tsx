@@ -389,7 +389,7 @@ class VignetteView extends CustomNodeView {
     }
   }
 
-  initialize(node: Node, editorView: EditorView, getPos: () => number): void {
+  initialize(node: Node, editorView: EditorView, _getPos: () => number): void {
     this.dom.style.height = node.attrs.width;
     this.dom.style.width = node.attrs.height;
     this.dom.style.backgroundColor = node.attrs.backgroundColor;
@@ -480,7 +480,7 @@ class VignetteView extends CustomNodeView {
       {
         editable: () => this.outerView.editable,
         state: EditorState.create({
-          doc: this.node,
+          doc: this.props.node,
           schema: this.outerView.state.schema,
           plugins: [
             ...plugins,
