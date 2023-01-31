@@ -1,49 +1,39 @@
-import {NodeSpec} from 'prosemirror-model';
+// @flow
 
-const VignetteNodeSpec: NodeSpec = {
-  attrs: {
-    id: { default: '' },
-    class: { default: 'vignette' },
-    width: { default: '100px' },
-    height: { default: '100px' },
-    backgroundColor: { default: 'lightgrey' },
-    align: { default: 'left'},
-  },
-  group: 'inline',
-  atom: true,
-  selectable: true,
-  draggable: true,
-  content: 'block*',
-  inline: true,///
-  parseDOM: [
-    {
-      tag: 'span.vignette',
-      getAttrs(dom: HTMLElement) {
-        const { cssFloat, display } = dom.style;
-        let align = dom.getAttribute('data-align') || dom.getAttribute('align');
-  if (align) {
-    align = /(left|right|center)/.test(align) ? align : null;
-  } else if (cssFloat === 'left' && !display) {
-    align = 'left';
-  } else if (cssFloat === 'right' && !display) {
-    align = 'right';
-  } else if (!cssFloat && display === 'block') {
-    align = 'block';
-  }
-        return {
-          id: dom.getAttribute('id'),
-          class: dom.getAttribute('class'),
-          width: dom.style.width,
-          height: dom.style.height,
-          backgroundColor: dom.style.backgroundColor,
-          align
-        };
-      },
+import {Node, NodeSpec} from 'prosemirror-model';
+
+// Override the default table node spec to support custom attributes.
+const VignetteNodeSpec = (nodespec: NodeSpec) =>
+  Object.assign({}, nodespec, {
+    attrs: {
+      marginLeft: {default: null},
+      vignette: {default: false},
     },
-  ],
-  toDOM(node) {
-    return ['span', node.attrs, 0];
-  },
-};
+    parseDOM: [
+      {
+        tag: 'table',
+        getAttrs(dom: HTMLElement): unknown | null {
+          const {marginLeft} = dom.style;
+          const vignette = dom.getAttribute('vignette') || false;
+          if (marginLeft && /\d+px/.test(marginLeft)) {
+            return {marginLeft: parseFloat(marginLeft), vignette};
+          }
+          return {vignette};
+        },
+      },
+    ],
+    toDOM(node: Node): Array<unknown> {
+      // Normally, the DOM structure of the table node is rendered by
+      // `TableNodeView`. This method is only called when user selects a
+      // table node and copies it, which triggers the "serialize to HTML" flow
+      //  that calles this method.
+      const {marginLeft, vignette} = node.attrs;
+      const domAttrs = {vignette};
+      if (marginLeft) {
+        domAttrs['style'] = `margin-left: ${marginLeft}px`;
+      }
+      return ['table', domAttrs, 0];
+    },
+  });
 
 export default VignetteNodeSpec;

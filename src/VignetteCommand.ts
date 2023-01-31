@@ -2,105 +2,100 @@ import {Fragment, Schema} from 'prosemirror-model';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
-import * as React from 'react';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import {createPopUp} from '@modusoperandi/licit-ui-commands';
-import VignetteEditor, {VignetteEditorState} from './ui/VignetteEditor';
-import {VIGNETTE} from './Constants';
-
-export function insertVignette(
-  tr: Transform,
-  schema: Schema,
-  config?: VignetteEditorState
-): Transform {
-  const {selection} = tr as Transaction;
-  if (!selection) {
-    return tr;
-  }
-  const {from, to} = selection;
-  if (from !== to) {
-    return tr;
-  }
-
-  const vignette = schema.nodes[VIGNETTE];
-  if (!vignette) {
-    return tr;
-  }
-
-  const attrs = {
-    width: config.width,
-    height: config.height,
-  };
-
-  const node = vignette.create(attrs, null, null);
-  const frag = Fragment.from(node);
-  tr = tr.insert(from, frag);
-  return tr;
-}
+import {PARAGRAPH} from './Constants';
 
 class VignetteCommand extends UICommand {
-  _popUp = null;
-
-  getEditor(): typeof React.Component {
-    return VignetteEditor;
-  }
 
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
     return this.__isEnabled(state, view);
   };
 
-  waitForUserInput = (
-    _state: EditorState,
-    _dispatch?: (tr: Transform) => void,
-    view?: EditorView,
-    _event?: React.SyntheticEvent
-  ): Promise<unknown> => {
-    if (this._popUp) {
-      return Promise.resolve(undefined);
-    }
-
-    return new Promise((resolve) => {
-      const props = {runtime: view['runtime']};
-      this._popUp = createPopUp(this.getEditor(), props, {
-        modal: true,
-        onClose: (val) => {
-          if (this._popUp) {
-            this._popUp = null;
-            resolve(val);
-          }
-        },
-      });
-    });
-  };
-
-  executeWithUserInput = (
+  execute = (
     state: EditorState,
     dispatch?: (tr: Transform) => void,
     view?: EditorView,
-    config?: VignetteEditorState
   ): boolean => {
     if (dispatch) {
-      const {selection, schema} = state;
+      const {schema} = state;
       let {tr} = state;
-      tr = tr.setSelection(selection);
-      if (config) {
-        tr = insertVignette(tr, schema, config) as Transaction;
-      }
+      tr = this.insertTable(tr, schema, 1, 1);
+      tr = this.insertParagraph(state, tr);
       dispatch(tr);
       view && view.focus();
     }
 
-    return false;
+    return true;
   };
 
-  __isEnabled = (state: EditorState, _view?: EditorView): boolean => {
-    const tr = state;
-    const {selection} = tr;
-    if (selection instanceof TextSelection) {
-      return selection.from === selection.to;
-    }
-    return false;
+  __isEnabled = (_state: EditorState, _view?: EditorView): boolean => {
+    return true;
   };
+
+  insertTable(
+    tr: Transaction,
+    schema: Schema,
+    rows: number,
+    cols: number
+  ): Transaction {
+    if (!tr.selection || !tr.doc) {
+      return tr;
+    }
+    const {from, to} = tr.selection;
+    if (from !== to) {
+      return tr;
+    }
+
+    const {nodes} = schema;
+    const cell = nodes['table_cell'];
+    const paragraph = nodes['paragraph'];
+    const row = nodes['table_row'];
+    const table = nodes['table'];
+    if (!(cell && paragraph && row && table)) {
+      return tr;
+    }
+
+    const rowNodes = [];
+    for (let rr = 0; rr < rows; rr++) {
+      const cellNodes = [];
+      for (let cc = 0; cc < cols; cc++) {
+        // [FS] IRAD-950 2020-05-25
+        // Fix:Extra arrow key required for cell navigation using arrow right/Left
+        const cellNode = cell.create(
+          undefined,
+          Fragment.fromArray([paragraph.create()])
+        );
+        cellNodes.push(cellNode);
+      }
+      const rowNode = row.create({}, Fragment.from(cellNodes));
+      rowNodes.push(rowNode);
+    }
+    const tableNode = table.create({vignette: true}, Fragment.from(rowNodes));
+    tr = tr.insert(from, Fragment.from(tableNode));
+
+    const selection = TextSelection.create(tr.doc, from + 5, from + 5);
+
+    tr = tr.setSelection(selection);
+    return tr;
+  }
+
+  // [FS] 2021-04-01
+  // Add empty line after table drop
+  // To make easier to enter a line after table
+  insertParagraph(state: EditorState, tr: Transaction) {
+    const paragraph = state.schema.nodes[PARAGRAPH];
+    const textNode = state.schema.text(' ');
+    const {from, to} = tr.selection;
+    if (from !== to) {
+      return tr;
+    }
+    const paragraphNode = paragraph.create({}, textNode, null);
+    tr = tr.insert(
+      from + tr.selection.$head.node(1).nodeSize - 4,
+      Fragment.from(paragraphNode)
+    );
+    return tr;
+  }
 }
 
 export default VignetteCommand;
