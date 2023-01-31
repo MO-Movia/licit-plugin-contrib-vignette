@@ -9,7 +9,7 @@ import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import createCommand from './CreateCommand';
-import {deleteTable} from 'prosemirror-tables';
+import {CellSelection, deleteTable} from 'prosemirror-tables';
 
 export const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 export const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -42,10 +42,19 @@ class VignetteTooltipView {
     _state: EditorState,
     actionNode: Node
   ): Array<{[key: string]: UICommand}> {
-    if (actionNode && actionNode.attrs.vignette) {
-      return VIGNETTE_COMMANDS_GROUP;
+    let vignette = false;
+    if (_state.selection instanceof CellSelection) {
+      if (_state.selection.$anchorCell.node(-1).attrs.vignette) {
+        vignette = true;
+      }
     }
-    return null;
+    if (actionNode && actionNode.attrs.vignette) {
+      vignette = true;
+    }
+    if (_state.selection.$anchor.node(1).attrs.vignette) {
+      vignette = true;
+    }
+    return vignette ? VIGNETTE_COMMANDS_GROUP : null;
   }
 
   destroy = (): void => {
