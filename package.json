@@ -25,7 +25,8 @@
     "prepare": "npm run build:dist",
     "test": "jest --coverage",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i",
-    "ci:bom": "cyclonedx-bom -o dist/bom.xml"
+    "ci:bom": "cyclonedx-bom -o dist/bom.xml",
+    "publish:dist": "npm publish"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
