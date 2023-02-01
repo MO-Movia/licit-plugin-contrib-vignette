@@ -26,9 +26,8 @@ class VignetteTooltipView {
   constructor(editorView: EditorView) {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
-        pluginView.constructor &&
-        pluginView.constructor.name &&
-        'TableCellTooltipView' === pluginView.constructor.name
+        // 'TableCellTooltipView' has property _cellElement
+        pluginView.hasOwnProperty('_cellElement')
       ) {
         pluginView['getMenu'] = this.getMenu;
       }
