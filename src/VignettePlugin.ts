@@ -4,6 +4,7 @@ import {EditorView} from 'prosemirror-view';
 import {Schema} from 'prosemirror-model';
 import VignetteCommand from './VignetteCommand';
 import VignetteNodeSpec from './VignetteNodeSpec';
+import { TABLE } from './Constants';
 
 export class VignettePlugin extends Plugin {
   _view: EditorView = null;
@@ -25,10 +26,10 @@ export class VignettePlugin extends Plugin {
   }
 
   getEffectiveSchema(schema: Schema): Schema {
-    const table = schema.spec.nodes.get('table');
+    const table = schema.spec.nodes.get(TABLE);
     const vignette = VignetteNodeSpec(table);
     const marks = schema.spec.marks;
-    const nodes = schema.spec.nodes.update('table', vignette);
+    const nodes = schema.spec.nodes.update(TABLE, vignette);
 
     return new Schema({
       nodes: nodes,

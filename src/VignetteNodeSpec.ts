@@ -1,6 +1,5 @@
-// @flow
-
 import {Node, NodeSpec} from 'prosemirror-model';
+import { TABLE, VIGNETTE } from './Constants';
 
 // Override the default table node spec to support custom attributes.
 const VignetteNodeSpec = (nodespec: NodeSpec) =>
@@ -11,10 +10,10 @@ const VignetteNodeSpec = (nodespec: NodeSpec) =>
     },
     parseDOM: [
       {
-        tag: 'table',
+        tag: TABLE,
         getAttrs(dom: HTMLElement): unknown | null {
           const {marginLeft} = dom.style;
-          const vignette = dom.getAttribute('vignette') || false;
+          const vignette = dom.getAttribute(VIGNETTE) || false;
           if (marginLeft && /\d+px/.test(marginLeft)) {
             return {marginLeft: parseFloat(marginLeft), vignette};
           }
@@ -32,7 +31,7 @@ const VignetteNodeSpec = (nodespec: NodeSpec) =>
       if (marginLeft) {
         domAttrs['style'] = `margin-left: ${marginLeft}px`;
       }
-      return ['table', domAttrs, 0];
+      return [TABLE, domAttrs, 0];
     },
   });
 

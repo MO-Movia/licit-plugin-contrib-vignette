@@ -16,16 +16,16 @@ The Vignette Plugin provides a "vignette box" which allows the document to highl
 
 Include plugin in licit component
 
-- import VignettePlugin
+- import VignettePlugins
 
-- add VignettePlugin instance in licit's plugin array
+- add VignettePlugins array in licit's plugin array
 
 ```
 
-import { VignettePlugin }  from  '@modusoperandi/licit-vignette';
+import { VignettePlugins }  from  '@modusoperandi/licit-vignette';
 
 
-const  plugins = [new  VignettePlugin()]
+const  plugins = [...VignettePlugins]
 
 ReactDOM.render(<Licit docID={0} plugins={plugins}/>
 

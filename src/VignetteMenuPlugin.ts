@@ -2,9 +2,6 @@ import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
-/* eslint-disable-next-line */
-import * as React from 'react';
-
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
@@ -62,10 +59,7 @@ class VignetteTooltipView {
   };
 }
 
-// https://prosemirror.net/examples/tooltip/
 const SPEC = {
-  // [FS] IRAD-1005 2020-07-07
-  // Upgrade outdated packages.
   key: new PluginKey('VignetteMenuPlugin'),
   view(editorView: EditorView) {
     return new VignetteTooltipView(editorView);
