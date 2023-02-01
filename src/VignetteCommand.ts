@@ -1,20 +1,18 @@
 import {Fragment, Schema} from 'prosemirror-model';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
-import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {PARAGRAPH, TABLE} from './Constants';
 
 class VignetteCommand extends UICommand {
-
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
     return this.__isEnabled(state, view);
   };
 
   execute = (
     state: EditorState,
-    dispatch?: (tr: Transform) => void,
-    view?: EditorView,
+    dispatch?: (tr: Transaction) => void,
+    view?: EditorView
   ): boolean => {
     if (dispatch) {
       const {schema} = state;
@@ -48,7 +46,7 @@ class VignetteCommand extends UICommand {
 
     const {nodes} = schema;
     const cell = nodes['table_cell'];
-    const paragraph = nodes['paragraph'];
+    const paragraph = nodes[PARAGRAPH];
     const row = nodes['table_row'];
     const table = nodes[TABLE];
     if (!(cell && paragraph && row && table)) {
