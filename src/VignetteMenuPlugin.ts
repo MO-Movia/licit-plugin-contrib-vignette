@@ -27,7 +27,7 @@ class VignetteTooltipView {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
-        pluginView.hasOwnProperty('_cellElement')
+        Object.prototype.hasOwnProperty.call(pluginView, '_cellElement')
       ) {
         pluginView['getMenu'] = this.getMenu;
       }

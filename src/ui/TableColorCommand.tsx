@@ -24,11 +24,6 @@ class TableColorCommand extends UICommand {
     return e.type === UICommand.EventType.MOUSEENTER;
   };
 
-  isEnabled = (state: EditorState): boolean => {
-    const cmd = setCellAttr(this.getAttrName(), '#000000');
-    return cmd(state);
-  };
-
   waitForUserInput = (
     _state: EditorState,
     _dispatch?: (tr: Transform) => void,

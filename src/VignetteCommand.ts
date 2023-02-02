@@ -60,7 +60,10 @@ class VignetteCommand extends UICommand {
         // [FS] IRAD-950 2020-05-25
         // Fix:Extra arrow key required for cell navigation using arrow right/Left
         const cellNode = cell.create(
-          undefined,
+          {
+            borderColor: '#36598d',
+            background: '#dce6f2',
+          },
           Fragment.fromArray([paragraph.create()])
         );
         cellNodes.push(cellNode);
