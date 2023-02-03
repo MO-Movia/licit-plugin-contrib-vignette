@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-vignette",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "subversion": "1",
   "description": "Vignette plugin built with ProseMirror",
   "main": "dist/index.js",

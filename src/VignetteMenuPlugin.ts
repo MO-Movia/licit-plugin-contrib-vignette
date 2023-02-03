@@ -45,10 +45,16 @@ class VignetteView {
     const tableNodeViewEx = this.tableNodeViewEx.bind(this, tableNodeView);
     editorView['nodeViews'][TABLE] = tableNodeViewEx;
     const index = editorView.state.plugins.findIndex((plugin) => {
-      return plugin.spec.key['key'].includes('tableColumnResizing$');
+      let found = false;
+      if (plugin.spec.key) {
+        found = plugin.spec.key['key'].includes('tableColumnResizing$');
+      }
+      return found;
     });
-    editorView.state.plugins[index].spec.props.nodeViews[TABLE] =
-      tableNodeViewEx;
+    if (-1 != index) {
+      editorView.state.plugins[index].spec.props.nodeViews[TABLE] =
+        tableNodeViewEx;
+    }
   }
 
   tableNodeViewEx(
@@ -56,7 +62,7 @@ class VignetteView {
     node: Node,
     view: EditorView
   ): TableView {
-    const base = tableNodeView(node, view);
+    const base = tableNodeView && tableNodeView(node, view);
     if (base && base.update && node.attrs.vignette) {
       base.update = this.updateEx.bind(base, base.update, this);
       this.updateBorder(base);
