@@ -20,6 +20,10 @@ class TableColorCommand extends UICommand {
     return '';
   };
 
+  isEnabled = (_state: EditorState): boolean => {
+    return true;
+  };
+
   shouldRespondToUIEvent = (e: React.SyntheticEvent | MouseEvent): boolean => {
     return e.type === UICommand.EventType.MOUSEENTER;
   };

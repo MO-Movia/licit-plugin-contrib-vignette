@@ -1,8 +1,8 @@
 import {Node, NodeSpec} from 'prosemirror-model';
-import { TABLE, VIGNETTE } from './Constants';
+import {TABLE, VIGNETTE} from './Constants';
 
 // Override the default table node spec to support custom attributes.
-const VignetteNodeSpec = (nodespec: NodeSpec) =>
+export const VignetteTableNodeSpec = (nodespec: NodeSpec) =>
   Object.assign({}, nodespec, {
     attrs: {
       marginLeft: {default: null},
@@ -28,11 +28,33 @@ const VignetteNodeSpec = (nodespec: NodeSpec) =>
       //  that calles this method.
       const {marginLeft, vignette} = node.attrs;
       const domAttrs = {vignette};
+      let style = 'border: none';
       if (marginLeft) {
-        domAttrs['style'] = `margin-left: ${marginLeft}px`;
+        style += `margin-left: ${marginLeft}px`;
       }
+      domAttrs['style'] = style;
       return [TABLE, domAttrs, 0];
     },
   });
 
-export default VignetteNodeSpec;
+export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) =>
+  Object.assign({}, nodespec, {
+    attrs: Object.assign({}, nodespec.attrs, {
+      vignette: {default: false},
+    }),
+    toDOM(node: Node): Array<unknown> {
+      const base = nodespec.toDOM(node);
+      if (
+        node.attrs.vignette &&
+        Array.isArray(base) &&
+        1 < base.length &&
+        base[1].style
+      ) {
+        base[1].style += 'border-radius: 10px; border-style: solid; border-width: thin';
+      }
+
+      return base as unknown as Array<unknown>;
+    },
+  });
+
+export default VignetteTableNodeSpec;

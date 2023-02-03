@@ -1,12 +1,13 @@
 import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
-import {EditorView} from 'prosemirror-view';
+import {EditorView, Decoration, DecorationSet} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import createCommand from './CreateCommand';
-import {CellSelection, deleteTable} from 'prosemirror-tables';
+import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
+import {TABLE} from './Constants';
 
 export const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 export const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -22,8 +23,13 @@ export const VIGNETTE_COMMANDS_GROUP = [
   },
 ];
 
-class VignetteTooltipView {
+class VignetteView {
   constructor(editorView: EditorView) {
+    this.setCustomMenu(editorView);
+    this.setCustomTableNodeViewUpdate(editorView);
+  }
+
+  setCustomMenu(editorView: EditorView) {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
@@ -32,6 +38,46 @@ class VignetteTooltipView {
         pluginView['getMenu'] = this.getMenu;
       }
     });
+  }
+
+  setCustomTableNodeViewUpdate(editorView: EditorView) {
+    const tableNodeView = editorView['nodeViews']['table'];
+    const tableNodeViewEx = this.tableNodeViewEx.bind(this, tableNodeView);
+    editorView['nodeViews'][TABLE] = tableNodeViewEx;
+    const index = editorView.state.plugins.findIndex((plugin) => {
+      return plugin.spec.key['key'].includes('tableColumnResizing$');
+    });
+    editorView.state.plugins[index].spec.props.nodeViews[TABLE] =
+      tableNodeViewEx;
+  }
+
+  tableNodeViewEx(
+    tableNodeView: (node: Node, view: EditorView) => TableView,
+    node: Node,
+    view: EditorView
+  ): TableView {
+    const base = tableNodeView(node, view);
+    if (base && base.update && node.attrs.vignette) {
+      base.update = this.updateEx.bind(base, base.update, this);
+      this.updateBorder(base);
+    }
+    return base;
+  }
+
+  updateEx(
+    update: (node: Node) => boolean,
+    self: VignetteView,
+    node: Node
+  ): boolean {
+    const result = update.call(this, node);
+    if (result) {
+      self.updateBorder(this as unknown as TableView);
+    }
+    return result;
+  }
+
+  updateBorder(tableView: TableView) {
+    tableView.table.style.border = 'none';
   }
 
   getMenu(
@@ -61,7 +107,7 @@ class VignetteTooltipView {
 const SPEC = {
   key: new PluginKey('VignetteMenuPlugin'),
   view(editorView: EditorView) {
-    return new VignetteTooltipView(editorView);
+    return new VignetteView(editorView);
   },
 };
 

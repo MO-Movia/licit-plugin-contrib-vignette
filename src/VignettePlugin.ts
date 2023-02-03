@@ -3,8 +3,11 @@ import {Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {Schema} from 'prosemirror-model';
 import VignetteCommand from './VignetteCommand';
-import VignetteNodeSpec from './VignetteNodeSpec';
-import { TABLE } from './Constants';
+import VignetteNodeSpec, {
+  VignetteTableCellNodeSpec,
+  VignetteTableNodeSpec,
+} from './VignetteNodeSpec';
+import {TABLE, TABLE_CELL} from './Constants';
 
 export class VignettePlugin extends Plugin {
   _view: EditorView = null;
@@ -13,7 +16,7 @@ export class VignettePlugin extends Plugin {
       key: new PluginKey('VignettePlugin'),
       state: {
         init(_config, _state) {
-            // do nothing
+          // do nothing
         },
         apply(_tr, _set) {
           //do nothing
@@ -26,10 +29,15 @@ export class VignettePlugin extends Plugin {
   }
 
   getEffectiveSchema(schema: Schema): Schema {
-    const table = schema.spec.nodes.get(TABLE);
-    const vignette = VignetteNodeSpec(table);
+    let nodes = schema.spec.nodes.update(
+      TABLE,
+      VignetteTableNodeSpec(schema.spec.nodes.get(TABLE))
+    );
+    nodes = nodes.update(
+      TABLE_CELL,
+      VignetteTableCellNodeSpec(schema.spec.nodes.get(TABLE_CELL))
+    );
     const marks = schema.spec.marks;
-    const nodes = schema.spec.nodes.update(TABLE, vignette);
 
     return new Schema({
       nodes: nodes,

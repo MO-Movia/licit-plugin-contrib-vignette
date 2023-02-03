@@ -2,7 +2,13 @@ import {Fragment, Schema} from 'prosemirror-model';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import {PARAGRAPH, TABLE} from './Constants';
+import {
+  DEF_BORDER_COLOR,
+  DEF_BORDER_RADIUS,
+  PARAGRAPH,
+  TABLE,
+  TABLE_CELL,
+} from './Constants';
 
 class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
@@ -45,7 +51,7 @@ class VignetteCommand extends UICommand {
     }
 
     const {nodes} = schema;
-    const cell = nodes['table_cell'];
+    const cell = nodes[TABLE_CELL];
     const paragraph = nodes[PARAGRAPH];
     const row = nodes['table_row'];
     const table = nodes[TABLE];
@@ -61,8 +67,9 @@ class VignetteCommand extends UICommand {
         // Fix:Extra arrow key required for cell navigation using arrow right/Left
         const cellNode = cell.create(
           {
-            borderColor: '#36598d',
+            borderColor: DEF_BORDER_COLOR,
             background: '#dce6f2',
+            vignette: true,
           },
           Fragment.fromArray([paragraph.create()])
         );
