@@ -35,7 +35,7 @@ class VignetteView {
         // 'TableCellTooltipView' has property _cellElement
         Object.prototype.hasOwnProperty.call(pluginView, '_cellElement')
       ) {
-        pluginView['getMenu'] = this.getMenu;
+        pluginView['getMenu'] = this.getMenu.bind(this);
       }
     });
   }
@@ -86,23 +86,48 @@ class VignetteView {
     tableView.table.style.border = 'none';
   }
 
-  getMenu(
-    _state: EditorState,
-    actionNode: Node
-  ): Array<{[key: string]: UICommand}> {
+  static isVignette(state: EditorState, actionNode: Node) {
     let vignette = false;
-    if (_state.selection instanceof CellSelection) {
-      if (_state.selection.$anchorCell.node(-1).attrs.vignette) {
+    if (state.selection instanceof CellSelection) {
+      if (state.selection.$anchorCell.node(-1).attrs.vignette) {
         vignette = true;
       }
     }
     if (actionNode && actionNode.attrs.vignette) {
       vignette = true;
     }
-    if (_state.selection.$anchor.node(1).attrs.vignette) {
+    if (state.selection.$anchor.node(1).attrs.vignette) {
       vignette = true;
     }
-    return vignette ? VIGNETTE_COMMANDS_GROUP : null;
+    return vignette;
+  }
+
+  getMenu(
+    state: EditorState,
+    actionNode: Node,
+    cmdGrps: Array<{[key: string]: UICommand}>
+  ): Array<{[key: string]: UICommand}> {
+    let vignette = VignetteView.isVignette(state, actionNode);
+
+    cmdGrps.forEach((cmdGrp) => {
+      Object.entries(cmdGrp).forEach((entry) => {
+        entry[1].isEnabled = this.isEnabledEx.bind(
+          entry[1],
+          entry[1].isEnabled
+        );
+      });
+    });
+    return vignette ? VIGNETTE_COMMANDS_GROUP : cmdGrps;
+  }
+
+  isEnabledEx(
+    isEnabled: (state: EditorState, view?: EditorView) => boolean,
+    state: EditorState,
+    view?: EditorView
+  ): boolean {
+    return VignetteView.isVignette(state, null)
+      ? false
+      : isEnabled.call(this as UICommand, state, view);
   }
 
   destroy = (): void => {
