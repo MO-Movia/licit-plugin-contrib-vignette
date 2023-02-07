@@ -2,13 +2,7 @@ import {Fragment, Schema} from 'prosemirror-model';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import {
-  DEF_BORDER_COLOR,
-  DEF_BORDER_RADIUS,
-  PARAGRAPH,
-  TABLE,
-  TABLE_CELL,
-} from './Constants';
+import {DEF_BORDER_COLOR, PARAGRAPH, TABLE, TABLE_CELL} from './Constants';
 
 class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {

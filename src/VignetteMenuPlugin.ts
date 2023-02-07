@@ -1,5 +1,5 @@
 import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
-import {EditorView, Decoration, DecorationSet} from 'prosemirror-view';
+import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';

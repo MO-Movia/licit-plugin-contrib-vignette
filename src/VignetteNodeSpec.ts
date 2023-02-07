@@ -13,12 +13,13 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec) =>
         tag: TABLE,
         getAttrs(dom: HTMLElement): unknown | null {
           const {marginLeft} = dom.style;
-          const vignette = dom.getAttribute(VIGNETTE) || false;
+          const vignette = dom.getAttribute(VIGNETTE) === 'true' || false;
           if (marginLeft && /\d+px/.test(marginLeft)) {
             return {marginLeft: parseFloat(marginLeft), vignette};
           }
           return {vignette};
         },
+        style: 'border',
       },
     ],
     toDOM(node: Node): Array<unknown> {
@@ -42,6 +43,16 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) =>
     attrs: Object.assign({}, nodespec.attrs, {
       vignette: {default: false},
     }),
+    parseDOM: [
+      {
+        tag: 'td',
+        getAttrs: (dom: HTMLElement) => {
+          return Object.assign({}, nodespec.parseDOM[0].getAttrs(dom), {
+            vignette: dom.getAttribute(VIGNETTE) || false,
+          });
+        },
+      },
+    ],
     toDOM(node: Node): Array<unknown> {
       const base = nodespec.toDOM(node);
       if (
@@ -50,8 +61,11 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) =>
         1 < base.length &&
         base[1].style
       ) {
-        base[1].style += 'border-radius: 10px; border-style: solid; border-width: thin';
+        base[1].style +=
+          'border-radius: 10px; border-style: solid; border-width: thin';
       }
+
+      base[1].vignette = node.attrs.vignette;
 
       return base as unknown as Array<unknown>;
     },
