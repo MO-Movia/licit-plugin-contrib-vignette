@@ -9,11 +9,11 @@ import createCommand from './CreateCommand';
 import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
-export const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
-export const TABLE_BORDER_COLOR = new TableBorderColorCommand();
-export const TABLE_DELETE_TABLE = createCommand(deleteTable);
+const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
+const TABLE_BORDER_COLOR = new TableBorderColorCommand();
+const TABLE_DELETE_TABLE = createCommand(deleteTable);
 
-export const VIGNETTE_COMMANDS_GROUP = [
+const VIGNETTE_COMMANDS_GROUP = [
   {
     'Fill Color...': TABLE_BACKGROUND_COLOR,
     'Border Color....': TABLE_BORDER_COLOR,
