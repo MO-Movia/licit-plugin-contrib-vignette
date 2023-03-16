@@ -48,7 +48,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) =>
         tag: 'td',
         getAttrs: (dom: HTMLElement) => {
           return Object.assign({}, nodespec.parseDOM[0].getAttrs(dom), {
-            vignette: dom.getAttribute(VIGNETTE) || false,
+            vignette: dom.getAttribute(VIGNETTE) === 'true' || false,
           });
         },
       },
