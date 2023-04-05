@@ -14,7 +14,7 @@ import {
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 
 class TableColorCommand extends UICommand {
-  _popUp = null;
+  _popUp:any = null;
 
   getAttrName = (): string => {
     return '';
