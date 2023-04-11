@@ -1,7 +1,7 @@
 import {createEditor, doc, p, table, tr, td, schema, strong} from 'jest-prosemirror';
 import {builders} from 'prosemirror-test-builder';
-
-import {TABLE} from './Constants';
+import { EditorState, Plugin, PluginKey,TextSelection } from 'prosemirror-state';
+import {TABLE, VIGNETTE} from './Constants';
 import VignetteCommand from './VignetteCommand';
 import {VignettePlugin} from './VignettePlugin';
 //import VignettePlugins from './VignettePlugins';
@@ -14,6 +14,8 @@ import {Node, NodeSpec} from 'prosemirror-model';
 import { object } from 'prop-types';
 import VignetteMenuPlugin from './VignetteMenuPlugin';
 import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
+import { EditorView } from 'prosemirror-view';
+import { Transform } from 'prosemirror-transform';
 export {};
 
 describe('VignettePlugin', () => {
@@ -57,9 +59,25 @@ describe('VignettePlugin', () => {
   });
 
   it('should handle createCommand', () => {
+    const editor = createEditor(doc(p('<cursor>')), {});
+    const dom = document.createElement('div')
+    const state: EditorState = EditorState.create({
+      schema: schema,
+      selection: editor.selection,
+   
+  
+  
+    });
+
+    const directeditorprops = { state }
+
+    const view = new EditorView(dom, directeditorprops);
+    const selection = TextSelection.create(editor.view.state.doc, 0, 0);
+    const tr = editor.view.state.tr.setSelection(selection);
     createEditor(doc(p('<cursor>')), {plugins: [...VignettePlugins]}).command(
       (state, _dispatch) => {
         createCommand(deleteTable).isEnabled(state);
+        createCommand(deleteTable).execute(state,editor.view.dispatch as (tr: Transform) => void,view)
         return true;
       }
     );
@@ -75,11 +93,29 @@ describe('VignettePlugin', () => {
   });
 
   it('should return vignette view', () => {
+    const editor1 = createEditor(doc(p('<cursor>')))
+    const state: EditorState = EditorState.create({
+      schema: schema,
+      selection: editor1.selection,
+  
+  
+    });
+    const directeditorprops = { state }
+    const dom = document.createElement('div')
+  
+    const view = new EditorView(dom, directeditorprops);
+
+
+
+   const spec = { key: new PluginKey('VignetteMenuPlugin'),  view(editorView: EditorView) {
+    return view;
+  }}
+
   const editor = createEditor(doc(p('<cursor>')), {
-    plugins: [new VignetteMenuPlugin],
+    plugins: [new VignetteMenuPlugin()],
   
   })
-  
+  let a= new VignetteMenuPlugin();
     
   });
 
@@ -93,9 +129,18 @@ describe('VignettePlugin', () => {
         vignette: true,
       };
     });
+    const el = document.createElement('span');
+    el.setAttribute(VIGNETTE,'true')
 
     const node = p('bold');
-    let nodeSpec1:NodeSpec ={}
+    let nodeSpec1:NodeSpec ={attrs: {
+      marginLeft: {default: '10px'},
+      vignette: {default: true},
+     
+    },parseDOM:[{tag:TABLE,
+    
+    }]}
+    
   expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
      
        "table",
@@ -105,8 +150,12 @@ describe('VignettePlugin', () => {
         },
        0,
       ])
+   VignetteTableNodeSpec(nodeSpec1).parseDOM[0].getAttrs(el)
+
 
   })
+
+
   it('dom should have matching node attributes',()=>{
 
     const mockToDOM = jest.fn((node) => {
@@ -116,9 +165,24 @@ describe('VignettePlugin', () => {
         vignette: true,
       };
     });
-
+    const el = document.createElement('span');
+    el.setAttribute(VIGNETTE,'true')
+    
+    const Attrs = {
+      
+        colspan:4,
+        rowspan: 1,
+        colwidth: 3
+      
+    }
     const node = p('bold');
-    let nodeSpec1:NodeSpec ={toDOM:(node: Node) => ['test',{vignette:'false'}]}
+    let nodeSpec1:NodeSpec ={toDOM:(node: Node) => ['test',{vignette:'false'}],
+    parseDOM:[{tag: 'td',
+    getAttrs:  
+    (dom) => Attrs 
+    }
+    
+  ]}
 
     
   expect(VignetteTableCellNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
@@ -130,6 +194,8 @@ describe('VignettePlugin', () => {
         }
       
       ])
+
+      VignetteTableCellNodeSpec(nodeSpec1).parseDOM[0].getAttrs(el);
 
   })
 
