@@ -1,33 +1,27 @@
-import {createEditor, doc, p, table, tr, td, schema, strong} from 'jest-prosemirror';
-import {builders} from 'prosemirror-test-builder';
-import { EditorState, Plugin, PluginKey,TextSelection } from 'prosemirror-state';
-import {TABLE, VIGNETTE} from './Constants';
+import { createEditor, doc, p, table, tr, td, schema, strong } from 'jest-prosemirror';
+import { EditorState, PluginKey, TextSelection } from 'prosemirror-state';
+import { TABLE } from './Constants';
 import VignetteCommand from './VignetteCommand';
-import {VignettePlugin} from './VignettePlugin';
-//import VignettePlugins from './VignettePlugins';
-import {VignettePlugins} from './index';
+import { VignettePlugin } from './VignettePlugin';
+import { VignettePlugins } from './index';
 import createCommand from './CreateCommand';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import { VignetteTableCellNodeSpec, VignetteTableNodeSpec } from './VignetteNodeSpec';
-import { Node, NodeSpec,Fragment } from 'prosemirror-model';
-import { object } from 'prop-types';
+import { Node, NodeSpec, Fragment } from 'prosemirror-model';
 import VignetteMenuPlugin from './VignetteMenuPlugin';
-import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
+import { deleteTable } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
 import { Transform } from 'prosemirror-transform';
-export {};
+export { };
 
 describe('VignettePlugin', () => {
 
   const editor = createEditor(doc(p('<cursor>')), { plugins: [...VignettePlugins] });
-
-  //const wrapper = shallow(<TableColorCommand />);
   const state: EditorState = EditorState.create({
     schema: schema,
     selection: editor.selection,
     plugins: [new VignetteMenuPlugin()]
-
 
   });
 
@@ -75,6 +69,8 @@ describe('VignettePlugin', () => {
     const vignetteplugin = new VignettePlugin()
     vignetteplugin.initButtonCommands()
     expect(newSchema.spec.nodes.get(TABLE)?.attrs?.vignette).toBeTruthy();
+
+
   });
 
   it('should handle createCommand', () => {
@@ -83,9 +79,6 @@ describe('VignettePlugin', () => {
     const state: EditorState = EditorState.create({
       schema: schema,
       selection: editor.selection,
-   
-  
-  
     });
 
     const directeditorprops = { state }
@@ -93,10 +86,10 @@ describe('VignettePlugin', () => {
     const view = new EditorView(dom, directeditorprops);
     const selection = TextSelection.create(editor.view.state.doc, 0, 0);
     const tr = editor.view.state.tr.setSelection(selection);
-    createEditor(doc(p('<cursor>')), {plugins: [...VignettePlugins]}).command(
+    createEditor(doc(p('<cursor>')), { plugins: [...VignettePlugins] }).command(
       (state, _dispatch) => {
         createCommand(deleteTable).isEnabled(state);
-        createCommand(deleteTable).execute(state,editor.view.dispatch as (tr: Transform) => void,view)
+        createCommand(deleteTable).execute(state, editor.view.dispatch as (tr: Transform) => void, view)
         return true;
       }
     );
@@ -116,15 +109,11 @@ describe('VignettePlugin', () => {
     const state: EditorState = EditorState.create({
       schema: schema,
       selection: editor1.selection,
-  
-  
     });
     const directeditorprops = { state }
     const dom = document.createElement('div')
-  
+
     const view = new EditorView(dom, directeditorprops);
-
-
 
     const spec = {
       key: new PluginKey('VignetteMenuPlugin'), view(editorView: EditorView) {
@@ -132,12 +121,12 @@ describe('VignettePlugin', () => {
       }
     }
 
-  const editor = createEditor(doc(p('<cursor>')), {
-    plugins: [new VignetteMenuPlugin()],
-  
-  })
-  let a= new VignetteMenuPlugin();
-    
+    const editor = createEditor(doc(p('<cursor>')), {
+      plugins: [new VignetteMenuPlugin()],
+
+    })
+    let a = new VignetteMenuPlugin();
+
   });
 
 
@@ -146,16 +135,13 @@ describe('VignettePlugin', () => {
     const dom = document.createElement('div');
     dom.setAttribute('style', 'margin-left: 10px');
 
-    // const node = p('span');
-    //  const node = schema.nodes.image.create({ type: 'paragraph', src: '', id: Date.now() },Fragment.empty)
-
     const schema = createEditor(doc(p('<cursor>'))).schema;
     const newSchema = new VignettePlugin().getEffectiveSchema(schema);
-    const node = newSchema.nodes.table.create({ marginLeft: '10px', vignette:'true' },Fragment.empty)
+    const node = newSchema.nodes.table.create({ marginLeft: '10', vignette: 'true' }, Fragment.empty)
     let nodeSpec1: NodeSpec = {
       toDOM: (node: any) => {
         node.attrs.marginLeft = '10px';
-        return ['test', { vignette: 'false', marginLeft: '10px' }]
+        return ['test', { vignette: 'false', marginLeft: '10x' }]
       }
       ,
       parseDOM: [{
@@ -173,50 +159,33 @@ describe('VignettePlugin', () => {
 
       "table",
       {
-        "style": "border: none",
-        "vignette": undefined,
+        "style": "border: nonemargin-left: 10px",
+        "vignette": "true",
       },
       0,
     ])
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
-
       "table",
       {
-        "style": "border: none",
-        "vignette": undefined,
+        "style": "border: nonemargin-left: 10px",
+        "vignette": "true",
       },
       0,
     ])
-
-
-
-
-
   })
 
 
-  it('dom should have matching node attributes VignetteTableNodeSpec', () => {
+  it('dom should have matching node attributes VignetteTableNodeSpec if statement coverage', () => {
 
-    const mockToDOM = jest.fn((node) => {
-      node.attrs['vignette'] ='true';
-      return {
-        marginLeft: "10px",
-        vignette: true,
-      };
-    });
     const dom = document.createElement('div');
-
-
     const node = p('bold');
     let nodeSpec1: NodeSpec = {
       toDOM: (node: Node) => ['test', { vignette: 'false', marginLeft: '10px' }], parseDOM: [{
         getAttrs: (dom: string | HTMLElement) => {
-
           return { marginLeft: '10px', vignette: 'true' }
         }
       }]
     }
-
 
     VignetteTableNodeSpec(nodeSpec1).parseDOM[0].getAttrs(dom);
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
@@ -240,66 +209,47 @@ describe('VignettePlugin', () => {
 
   })
 
-
-
-
-
   it('dom should have matching node attributes VignetteTableCellNodeSpec', () => {
 
-    const mockToDOM = jest.fn((node) => {
-      node.attrs['vignette'] = 'true';
-      node.attrs['marginLeft'] = '10px';
-      return {
-        marginLeft: "10px",
-        vignette: true,
-      };
-    });
-
     const node = p('vignette', 'marginLeft');
-
-
     let nodeSpec1: NodeSpec = { toDOM: (node: Node) => ['test', { vignette: 'false', marginLeft: '10px' }], parseDOM: [{ getAttrs: (node: string | HTMLElement) => { return { marginLeft: '10px', vignette: 'true' } } }] }
-
-
     const dom = document.createElement('span')
     // VignetteTableCellNodeSpec(nodeSpec1).parseDOM[1]
+    expect(VignetteTableCellNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
+      "test",
+      {
+        "marginLeft": "10px",
+        "vignette": undefined,
+      }
+
+    ])
+
+    VignetteTableCellNodeSpec(nodeSpec1).parseDOM[0].getAttrs(dom);
+
+  })
+  it('dom should have matching node attributes VignetteTableCellNodeSpec if statement coverage', () => {
+
+
+    const schema = createEditor(doc(p('<cursor>'))).schema;
+    const newSchema = new VignettePlugin().getEffectiveSchema(schema);
+    const node = newSchema.nodes.table_cell.create({ vignette: true, style: '' }, Fragment.empty)
+
+
+    let nodeSpec1: NodeSpec = { toDOM: (node: Node) => ['test', { vignette: true, marginLeft: '10px', style: true }], parseDOM: [{ getAttrs: (node: string | HTMLElement) => { return { marginLeft: '10px', vignette: true } } }] }
+    const dom = document.createElement('span')
     expect(VignetteTableCellNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
 
       "test",
       {
         "marginLeft": "10px",
-        "vignette": undefined,
-        }
-      
-      ])
+        "vignette": true,
+        "style": "trueborder-radius: 10px; border-style: solid; border-width: thin"
+      }
+
+    ])
 
     VignetteTableCellNodeSpec(nodeSpec1).parseDOM[0].getAttrs(dom);
 
   })
 
-
-
-
-
-
-
-  // it('dom should have matching node attributes',()=>{
-  //   const plugin = new VignettePlugin();
-  // const effSchema = plugin.getEffectiveSchema(schema);
-  //   const p = builders(effSchema, {p: {nodeType: 'paragraph'}});
-
-  //   let nodeSpec1:NodeSpec ={}
-  //  let node = {attrs:{
-  //   marginLeft: '10px',
-  //   vignette: true,
-  //  }} 
-  //  expect(VignetteTableNodeSpec(nodeSpec1).toDOM()).toStrictEqual([
-  //   'span',
-  //   {
-  //     "10px":node.attrs.marginLeft,
-  //     true: node.attrs.vignette
-      
-  //   },
-  //  ])
-  //  });
 })

@@ -1,18 +1,15 @@
 import TableColorCommand from './TableColorCommand';
-import { Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-test-builder';
-import { EditorState, TextSelection, Plugin, PluginKey, Transaction } from 'prosemirror-state';
+import { EditorState } from 'prosemirror-state';
 import { createEditor, doc, p } from 'jest-prosemirror';
-import { KeyboardEvent } from 'react';
-import { shallow } from "enzyme";
 import React from 'react';
 import { Transform } from 'prosemirror-transform';
 import { EditorView } from 'prosemirror-view';
 describe("Table color command", () => {
-  it('should be true',()=>{
-    expect(2+2).toBe(4);
+  it('should be true', () => {
+    expect(2 + 2).toBe(4);
   })
-  
+
   const tableColorCommand = new TableColorCommand();
   const editor = createEditor(doc(p('<cursor>')), {});
 
@@ -56,9 +53,9 @@ describe("Table color command", () => {
   })
 
   it("should wait for user input and return true when even.currenttarget is html element instance", () => {
-    tableColorCommand._popUp =null;
-    const mouseevent_new =  {
-      currentTarget: document.createElement('div') 
+    tableColorCommand._popUp = null;
+    const mouseevent_new = {
+      currentTarget: document.createElement('div')
     } as React.ChangeEvent<HTMLInputElement>;
 
     expect(tableColorCommand.waitForUserInput(state, editor.view.dispatch as (tr: Transform) => void, view, mouseevent_new)).toBeTruthy();
