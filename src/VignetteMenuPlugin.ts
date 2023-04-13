@@ -130,7 +130,7 @@ export class VignetteView {
   ): boolean {
     return VignetteView.isVignette(state, null)
       ? false
-      : isEnabled.call(this as UICommand, state, view);
+      : isEnabled.call(this as unknown as UICommand, state, view);
   }
 
   destroy = (): void => {
