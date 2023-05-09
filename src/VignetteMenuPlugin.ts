@@ -107,7 +107,7 @@ class VignetteView {
     actionNode: Node,
     cmdGrps: Array<{[key: string]: UICommand}>
   ): Array<{[key: string]: UICommand}> {
-    let vignette = VignetteView.isVignette(state, actionNode);
+    const vignette = VignetteView.isVignette(state, actionNode);
 
     cmdGrps.forEach((cmdGrp) => {
       Object.entries(cmdGrp).forEach((entry) => {
