@@ -10,7 +10,7 @@
   },
   "bundleDependencies": [],
   "scripts": {
-    "clean": "rm -rf dist/ coverage/ bin/ && rm -f modusoperandi-licit-vignette-*.*.*.tgz",
+    "clean": "rm -rf dist/ bin/ && rm -f modusoperandi-licit-vignette-*.*.*.tgz",
     "build:ts": "tsc -p tsconfig.json",
     "build:babel": "babel src --out-dir dist --extensions .ts,.tsx",
     "build:dist": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
