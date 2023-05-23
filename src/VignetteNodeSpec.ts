@@ -14,8 +14,9 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec) =>
         getAttrs(dom: HTMLElement): unknown | null {
           const {marginLeft} = dom.style;
           const vignette = dom.getAttribute(VIGNETTE) === 'true' || false;
-          if (marginLeft && /\d+px/.test(marginLeft)) {
-            return {marginLeft: parseFloat(marginLeft), vignette};
+          const marginAmount = parseFloat(marginLeft);
+          if (marginLeft && !Number.isNaN(marginAmount) && marginLeft.includes('px')) {
+            return {marginLeft: marginAmount, vignette};
           }
           return {vignette};
         },
