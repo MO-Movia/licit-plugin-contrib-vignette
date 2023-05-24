@@ -1,4 +1,4 @@
-import {Fragment, Schema} from 'prosemirror-model';
+import {Fragment} from 'prosemirror-model';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
@@ -15,10 +15,8 @@ class VignetteCommand extends UICommand {
     view?: EditorView
   ): boolean => {
     if (dispatch) {
-      const {schema} = state;
       let {tr} = state;
-      tr = this.insertTable(tr, schema, 1, 1);
-      tr = this.insertParagraph(state, tr);
+      tr = this.insertTable(state, 1, 1);
       dispatch(tr);
       view && view.focus();
     }
@@ -26,16 +24,33 @@ class VignetteCommand extends UICommand {
     return true;
   };
 
-  __isEnabled = (_state: EditorState, _view?: EditorView): boolean => {
-    return true;
+  __isEnabled = (state: EditorState, _view?: EditorView): boolean => {
+    const tr = state;
+    let bOK = false;
+    const {selection} = tr;
+    //if (selection instanceof _prosemirrorState.TextSelection) {
+    bOK = selection.from === selection.to;
+    // [FS] IRAD-1065 2020-09-18
+    // Disable create table menu if the selection is inside a table.
+    if (bOK) {
+      const $head = selection.$head;
+      let vignette = false;
+      for (let d = 0; $head.depth > d; d++) {
+        const n = $head.node(d);
+        if (n.type.name == 'table' && n.attrs['vignette']) {
+          vignette = true;
+        }
+        if (n.type.spec.tableRole == 'row') {
+          bOK = !vignette;
+        }
+      }
+    }
+    return bOK;
   };
 
-  insertTable(
-    tr: Transaction,
-    schema: Schema,
-    rows: number,
-    cols: number
-  ): Transaction {
+  insertTable(state: EditorState, rows: number, cols: number): Transaction {
+    let {tr} = state;
+    const {schema} = state;
     if (!tr.selection || !tr.doc) {
       return tr;
     }
@@ -78,24 +93,27 @@ class VignetteCommand extends UICommand {
     const selection = TextSelection.create(tr.doc, from + 5, from + 5);
 
     tr = tr.setSelection(selection);
+
+    tr = this.insertParagraph(state, tr, from, to);
     return tr;
   }
 
   // [FS] 2021-04-01
   // Add empty line after table drop
   // To make easier to enter a line after table
-  insertParagraph(state: EditorState, tr: Transaction) {
+  insertParagraph(
+    state: EditorState,
+    tr: Transaction,
+    from: number,
+    to: number
+  ) {
     const paragraph = state.schema.nodes[PARAGRAPH];
     const textNode = state.schema.text(' ');
-    const {from, to} = tr.selection;
     if (from !== to) {
       return tr;
     }
     const paragraphNode = paragraph.create({}, textNode, null);
-    tr = tr.insert(
-      from + tr.selection.$head.node(1).nodeSize - 4,
-      Fragment.from(paragraphNode)
-    );
+    tr = tr.insert(from + 7, Fragment.from(paragraphNode));
     return tr;
   }
 }
