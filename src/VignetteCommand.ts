@@ -28,20 +28,21 @@ class VignetteCommand extends UICommand {
     const tr = state;
     let bOK = false;
     const {selection} = tr;
-    //if (selection instanceof _prosemirrorState.TextSelection) {
-    bOK = selection.from === selection.to;
-    // [FS] IRAD-1065 2020-09-18
-    // Disable create table menu if the selection is inside a table.
-    if (bOK) {
-      const $head = selection.$head;
-      let vignette = false;
-      for (let d = 0; $head.depth > d; d++) {
-        const n = $head.node(d);
-        if (n.type.name == 'table' && n.attrs['vignette']) {
-          vignette = true;
-        }
-        if (n.type.spec.tableRole == 'row') {
-          bOK = !vignette;
+    if (selection.constructor.name === TextSelection.name) {
+      bOK = selection.from === selection.to;
+      // [FS] IRAD-1065 2020-09-18
+      // Disable create table menu if the selection is inside a table.
+      if (bOK) {
+        const $head = selection.$head;
+        let vignette = false;
+        for (let d = 0; $head.depth > d; d++) {
+          const n = $head.node(d);
+          if (n.type.name == 'table' && n.attrs['vignette']) {
+            vignette = true;
+          }
+          if (n.type.spec.tableRole == 'row') {
+            bOK = !vignette;
+          }
         }
       }
     }
