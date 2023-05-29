@@ -105,9 +105,12 @@ class VignetteView {
   getMenu(
     state: EditorState,
     actionNode: Node,
-    cmdGrps: Array<{[key: string]: UICommand}>
+    cmdGrps: Array<{[key: string]: UICommand}>,
+    icon: {name: string}
   ): Array<{[key: string]: UICommand}> {
     const vignette = VignetteView.isVignette(state, actionNode);
+
+    icon.name = vignette ? 'more_horiz' : icon.name;
 
     cmdGrps.forEach((cmdGrp) => {
       Object.entries(cmdGrp).forEach((entry) => {
@@ -127,7 +130,7 @@ class VignetteView {
   ): boolean {
     return VignetteView.isVignette(state, null)
       ? false
-      : isEnabled.call(this as UICommand, state, view);
+      : isEnabled.call(this as unknown as UICommand, state, view);
   }
 
   destroy = (): void => {
