@@ -3,6 +3,7 @@ import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {DEF_BORDER_COLOR, PARAGRAPH, TABLE, TABLE_CELL} from './Constants';
+import {isAllowed} from './Helper';
 
 class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
@@ -25,28 +26,7 @@ class VignetteCommand extends UICommand {
   };
 
   __isEnabled = (state: EditorState, _view?: EditorView): boolean => {
-    const tr = state;
-    let bOK = false;
-    const {selection} = tr;
-    if (selection.constructor.name === TextSelection.name) {
-      bOK = selection.from === selection.to;
-      // [FS] IRAD-1065 2020-09-18
-      // Disable create table menu if the selection is inside a table.
-      if (bOK) {
-        const $head = selection.$head;
-        let vignette = false;
-        for (let d = 0; $head.depth > d; d++) {
-          const n = $head.node(d);
-          if (n.type.name == 'table' && n.attrs['vignette']) {
-            vignette = true;
-          }
-          if (n.type.spec.tableRole == 'row') {
-            bOK = !vignette;
-          }
-        }
-      }
-    }
-    return bOK;
+    return isAllowed(state.tr.selection);
   };
 
   insertTable(state: EditorState, rows: number, cols: number): Transaction {

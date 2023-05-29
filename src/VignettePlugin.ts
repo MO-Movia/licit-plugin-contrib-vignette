@@ -1,16 +1,16 @@
 // Plugin to handle Citation.
 import {Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
-import {Schema} from 'prosemirror-model';
+import {Schema, Slice} from 'prosemirror-model';
 import VignetteCommand from './VignetteCommand';
 import {
   VignetteTableCellNodeSpec,
   VignetteTableNodeSpec,
 } from './VignetteNodeSpec';
 import {TABLE, TABLE_CELL} from './Constants';
+import {isAllowed} from './Helper';
 
 export class VignettePlugin extends Plugin {
-  _view: EditorView = null;
   constructor() {
     super({
       key: new PluginKey('VignettePlugin'),
@@ -24,6 +24,25 @@ export class VignettePlugin extends Plugin {
       },
       props: {
         nodeViews: {},
+        handlePaste(
+          view: EditorView,
+          _event: ClipboardEvent,
+          slice: Slice
+        ): boolean | void {
+          // check if copied content have table.
+          let allowed = true;
+          let haveTable = false;
+          for (let i = 0; i < slice.content.childCount; i++) {
+            if ('table' == slice.content.child(i).type.name) {
+              haveTable = true;
+            }
+          }
+
+          if (haveTable) {
+            allowed = isAllowed(view.state.selection);
+          }
+          return !allowed;
+        },
       },
     });
   }
