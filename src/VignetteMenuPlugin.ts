@@ -1,4 +1,4 @@
-import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
+import {EditorState, Plugin, PluginKey, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
@@ -6,7 +6,7 @@ import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import createCommand from './CreateCommand';
-import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
+import {deleteTable, TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
@@ -86,18 +86,19 @@ class VignetteView {
     tableView.table.style.border = 'none';
   }
 
-  static isVignette(state: EditorState, actionNode: Node) {
+  static isVignette(state: EditorState, _actionNode: Node) {
     let vignette = false;
-    if (state.selection instanceof CellSelection) {
-      if (state.selection.$anchorCell.node(-1).attrs.vignette) {
-        vignette = true;
+    const selection = state.selection;
+    if (selection.constructor.name === TextSelection.name) {
+      if (selection.from === selection.to) {
+        const $head = selection.$head;
+        for (let d = 0; $head.depth > d && !vignette; d++) {
+          const n = $head.node(d);
+          if (n.type.name == 'table' && n.attrs['vignette']) {
+            vignette = true;
+          }
+        }
       }
-    }
-    if (actionNode && actionNode.attrs.vignette) {
-      vignette = true;
-    }
-    if (state.selection.$anchor.node(1).attrs.vignette) {
-      vignette = true;
     }
     return vignette;
   }
