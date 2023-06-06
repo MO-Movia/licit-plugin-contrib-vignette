@@ -29,22 +29,33 @@ export class VignettePlugin extends Plugin {
           _event: ClipboardEvent,
           slice: Slice
         ): boolean | void {
-          // check if copied content have table.
-          let allowed = true;
-          let haveTable = false;
-          for (let i = 0; i < slice.content.childCount; i++) {
-            if ('table' == slice.content.child(i).type.name) {
-              haveTable = true;
-            }
-          }
-
-          if (haveTable) {
-            allowed = isAllowed(view.state.selection);
-          }
-          return !allowed;
+          return (this as unknown as VignettePlugin).isAllowed(view, slice);
+        },
+        handleDrop(
+          view: EditorView,
+          _event: DragEvent,
+          slice: Slice
+        ): boolean | void {
+          return (this as unknown as VignettePlugin).isAllowed(view, slice);
         },
       },
     });
+  }
+
+  isAllowed(view: EditorView, slice: Slice): boolean {
+    // check if copied content have table.
+    let allowed = true;
+    let haveTable = false;
+    for (let i = 0; i < slice.content.childCount; i++) {
+      if ('table' == slice.content.child(i).type.name) {
+        haveTable = true;
+      }
+    }
+
+    if (haveTable) {
+      allowed = isAllowed(view.state.selection);
+    }
+    return !allowed;
   }
 
   getEffectiveSchema(schema: Schema): Schema {
