@@ -10,8 +10,7 @@ import { CellSelection, deleteTable, TableView } from 'prosemirror-tables';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import createCommand from './CreateCommand';
-import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
-export { };
+
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -69,10 +68,6 @@ describe('VignetteMenuPlugin', () => {
     let vignetteview = new VignetteView(view);
     expect(vignetteview.isEnabledEx(isenabled, state)).toBeFalsy();
   });
-
-
-
-
   it('dom should call getMenu', () => {
     let vignetteview = new VignetteView(view);
     const VIGNETTE_COMMANDS_GROUP = [
@@ -116,8 +111,6 @@ describe('VignetteMenuPlugin', () => {
     const dom = document.createElement('div')
 
     const view1 = new EditorView(dom, directeditorprops);
-
-    // let vignetteview = new VignetteView(view1)as unknown as TableView;
     const node = newSchema.nodes.table.create({ marginLeft: '10px', vignette: 'true' }, Fragment.empty)
     editor1.doc.content.addToEnd(node);
     let vignetteview = new VignetteView(view1)
@@ -133,4 +126,4 @@ describe('VignetteMenuPlugin', () => {
     expect(vignetteview.updateEx(update, vignetteview, node)).toBeTruthy();
   });
 
-})
+});

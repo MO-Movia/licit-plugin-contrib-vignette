@@ -86,7 +86,7 @@ export class VignetteView {
     if (tableView.table){
       tableView.table.style.border = 'none';
     }
-   
+
   }
 
   static isVignette(state: EditorState, actionNode: Node) {
@@ -110,7 +110,7 @@ export class VignetteView {
     actionNode: Node,
     cmdGrps: Array<{ [key: string]: UICommand }>
   ): Array<{ [key: string]: UICommand }> {
-    let vignette = VignetteView.isVignette(state, actionNode);
+    const vignette = VignetteView.isVignette(state, actionNode);
 
     cmdGrps.forEach((cmdGrp) => {
       Object.entries(cmdGrp).forEach((entry) => {
@@ -149,7 +149,7 @@ class VignetteMenuPlugin extends Plugin {
   constructor() {
 
       super(SPEC);
- 
+
 
   }
 }

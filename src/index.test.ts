@@ -183,9 +183,9 @@ describe('VignettePlugin', () => {
       toDOM: (node: Node) => ['test', { vignette: 'false', marginLeft: '10px' }], parseDOM: [{
         getAttrs: (dom: string | HTMLElement) => {
           return { marginLeft: '10px', vignette: 'true' }
-        }
-      }]
-    }
+        },
+      }],
+    };
 
     VignetteTableNodeSpec(nodeSpec1).parseDOM[0].getAttrs(dom);
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
@@ -196,7 +196,7 @@ describe('VignettePlugin', () => {
         "vignette": undefined,
       },
       0,
-    ])
+    ]);
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
 
       "table",
@@ -205,16 +205,15 @@ describe('VignettePlugin', () => {
         "vignette": undefined,
       },
       0,
-    ])
+    ]);
 
-  })
+  });
 
   it('dom should have matching node attributes VignetteTableCellNodeSpec', () => {
 
     const node = p('vignette', 'marginLeft');
     let nodeSpec1: NodeSpec = { toDOM: (node: Node) => ['test', { vignette: 'false', marginLeft: '10px' }], parseDOM: [{ getAttrs: (node: string | HTMLElement) => { return { marginLeft: '10px', vignette: 'true' } } }] }
     const dom = document.createElement('span')
-    // VignetteTableCellNodeSpec(nodeSpec1).parseDOM[1]
     expect(VignetteTableCellNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
       "test",
       {
