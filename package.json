@@ -10,7 +10,7 @@
   },
   "bundleDependencies": [],
   "scripts": {
-    "clean": "rm -rf dist/ coverage/ bin/ && rm -f modusoperandi-licit-vignette-*.*.*.tgz",
+    "clean": "rm -rf dist/ bin/ && rm -f modusoperandi-licit-vignette-*.*.*.tgz",
     "build:ts": "tsc -p tsconfig.json",
     "build:babel": "babel src --out-dir dist --extensions .ts,.tsx",
     "build:dist": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
@@ -25,7 +25,7 @@
     "prepare": "npm run build:dist",
     "test": "jest --coverage",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i",
-    "ci:bom": "cyclonedx-bom -o dist/bom.xml",
+    "ci:bom": "cyclonedx-npm --ignore-npm-errors --short-PURLs --output-format XML --output-file dist/bom.xml",
     "publish:dist": "npm publish"
   },
   "devDependencies": {
@@ -54,7 +54,7 @@
     "@babel/preset-env": "^7.19.4",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
-    "@cyclonedx/bom": "^3.0.3",
+    "@cyclonedx/cyclonedx-npm": "^1.11.0",
     "@testing-library/dom": "^8.19.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
