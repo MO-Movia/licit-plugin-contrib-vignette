@@ -1,9 +1,8 @@
-import TableColorCommand from './ui/TableColorCommand';
+import {TableColorCommand }from './ui/TableColorCommand';
 
-class TableBorderColorCommand extends TableColorCommand {
+export class TableBorderColorCommand extends TableColorCommand {
   getAttrName = (): string => {
     return 'borderColor';
   };
 }
 
-export default TableBorderColorCommand;

@@ -72,4 +72,3 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) =>
     },
   });
 
-export default VignetteTableNodeSpec;

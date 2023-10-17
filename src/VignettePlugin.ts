@@ -2,7 +2,7 @@
 import {Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {Schema} from 'prosemirror-model';
-import VignetteCommand from './VignetteCommand';
+import{ VignetteCommand }from './VignetteCommand';
 import {
   VignetteTableCellNodeSpec,
   VignetteTableNodeSpec,

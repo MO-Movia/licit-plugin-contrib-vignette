@@ -3,10 +3,10 @@ import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import TableBackgroundColorCommand from './TableBackgroundColorCommand';
-import TableBorderColorCommand from './TableBorderColorCommand';
-import createCommand from './CreateCommand';
-import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
+import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
+import {TableBorderColorCommand} from './TableBorderColorCommand';
+import {createCommand} from './CreateCommand';
+import {CellSelection, deleteTable,TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
@@ -23,7 +23,7 @@ const VIGNETTE_COMMANDS_GROUP = [
   },
 ];
 
-class VignetteView {
+export class VignetteView {
   constructor(editorView: EditorView) {
     this.setCustomMenu(editorView);
     this.setCustomTableNodeViewUpdate(editorView);
@@ -127,7 +127,7 @@ class VignetteView {
   ): boolean {
     return VignetteView.isVignette(state, null)
       ? false
-      : isEnabled.call(this as UICommand, state, view);
+      : isEnabled.call(this as unknown as UICommand, state, view);
   }
 
   destroy = (): void => {
@@ -142,10 +142,8 @@ const SPEC = {
   },
 };
 
-class VignetteMenuPlugin extends Plugin {
+export class VignetteMenuPlugin extends Plugin {
   constructor() {
     super(SPEC);
   }
 }
-
-export default VignetteMenuPlugin;

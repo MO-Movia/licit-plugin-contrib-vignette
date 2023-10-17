@@ -13,7 +13,7 @@ import {
 } from '@modusoperandi/licit-ui-commands';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 
-class TableColorCommand extends UICommand {
+export class TableColorCommand extends UICommand {
   _popUp = null;
 
   getAttrName = (): string => {
@@ -76,4 +76,3 @@ class TableColorCommand extends UICommand {
   }
 }
 
-export default TableColorCommand;

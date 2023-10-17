@@ -4,7 +4,7 @@ import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {DEF_BORDER_COLOR, PARAGRAPH, TABLE, TABLE_CELL} from './Constants';
 
-class VignetteCommand extends UICommand {
+export class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
     return this.__isEnabled(state, view);
   };
@@ -100,4 +100,3 @@ class VignetteCommand extends UICommand {
   }
 }
 
-export default VignetteCommand;

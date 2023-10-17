@@ -1,8 +1,8 @@
-import {EditorState, Transaction} from 'prosemirror-state';
-import {Transform} from 'prosemirror-transform';
-import {EditorView} from 'prosemirror-view';
+import { EditorState, Transaction } from 'prosemirror-state';
+import { Transform } from 'prosemirror-transform';
+import { EditorView } from 'prosemirror-view';
 
-import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
+import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
 
 type ExecuteCall = (
   state: EditorState,
@@ -10,7 +10,7 @@ type ExecuteCall = (
   view?: EditorView
 ) => boolean;
 
-export default function createCommand(execute: ExecuteCall): UICommand {
+export function createCommand(execute: ExecuteCall): UICommand {
   class CustomCommand extends UICommand {
     isEnabled = (state: EditorState): boolean => {
       return this.execute(state);

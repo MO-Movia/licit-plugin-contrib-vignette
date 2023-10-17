@@ -1,3 +1,10 @@
-import VignettePlugins from './VignettePlugins';
-
-export {VignettePlugins};
+export * from './VignettePlugins';
+export * from './ui/TableColorCommand';
+export * from './CreateCommand';
+export * from './TableBackgroundColorCommand';
+export * from './TableBorderColorCommand';
+export * from './VignetteCommand';
+export * from './VignettePlugin';
+export * from './Constants';
+export * from './VignetteMenuPlugin';
+export * from './VignetteNodeSpec';
