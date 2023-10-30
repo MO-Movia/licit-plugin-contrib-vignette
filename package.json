@@ -25,7 +25,6 @@
     "ci:build": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
     "test:unit": "jest",
     "test:coverage": "jest --coverage",
-    "prepare": "npm run build:dist",
     "test": "jest --coverage",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i",
     "ci:bom": "cyclonedx-npm --ignore-npm-errors --short-PURLs --output-format XML --output-file dist/bom.xml",
@@ -113,6 +112,9 @@
     "orderedmap": "^1.1.8",
     "prop-types": "^15.8.1",
     "rewire": "^6.0.0"
+  },
+  "overrides": {
+    "semver": "^7.5.2"
   },
   "importSort": {
     ".js": {
