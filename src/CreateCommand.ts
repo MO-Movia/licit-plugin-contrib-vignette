@@ -36,18 +36,18 @@ export default function createCommand(execute: ExecuteCall): UICommand {
 
     waitForUserInput = (
       _state: EditorState,
-      _dispatch: ?(tr: Transform) => void,
-      _view: ?EditorView,
-      _event: ?React.SyntheticEvent
+      _dispatch?: (tr: Transform) => void,
+      _view?: EditorView,
+      _event?: React.SyntheticEvent
     ): Promise<undefined> => {
       return Promise.resolve(undefined);
     };
 
     executeWithUserInput = (
       _state: EditorState,
-      _dispatch: ?(tr: Transform) => void,
-      _view: ?EditorView,
-      _inputs: ?string
+      _dispatch?: (tr: Transform) => void,
+      _view?: EditorView,
+      _inputs?: string
     ): boolean => {
       return false;
     };
