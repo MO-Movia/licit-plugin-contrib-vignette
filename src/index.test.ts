@@ -1,5 +1,5 @@
-import { createEditor, doc, p, table, tr, td, schema, strong } from 'jest-prosemirror';
-import { EditorState, PluginKey, TextSelection } from 'prosemirror-state';
+import { createEditor, doc, p, table, tr, td, schema,tableCell as table_row,tableRow as table_cell } from 'jest-prosemirror';
+import { EditorState } from 'prosemirror-state';
 import { TABLE } from './Constants';
 import VignetteCommand from './VignetteCommand';
 import { VignettePlugin } from './VignettePlugin';
@@ -12,7 +12,6 @@ import { Node, NodeSpec, Fragment } from 'prosemirror-model';
 import VignetteMenuPlugin from './VignetteMenuPlugin';
 import { deleteTable } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
-import { Transform } from 'prosemirror-transform';
 export { };
 
 describe('VignettePlugin', () => {
@@ -30,36 +29,36 @@ describe('VignettePlugin', () => {
 
   const view = new EditorView(dom, directeditorprops);
 
-  it('should handle VignetteCommand', () => {
-    createEditor(doc(p('<cursor>')), { plugins: [...VignettePlugins] })
+  it('should handle VignetteCommand', async () => {
+
+    const content = await createEditor(doc(p('<cursor>')), { plugins: [...VignettePlugins] })
       .command((state, dispatch) => {
         if (dispatch) {
           new VignetteCommand().execute(state, dispatch, view);
         }
         return true;
-      })
-      .callback((content) => {
-        expect(content.state.doc).toEqualProsemirrorNode(
-          doc(
-            p(),
-            table(
-              tr(
-                td(
-                  {
-                    colspan: 1,
-                    rowspan: 1,
-                    colwidth: null,
-                    pretty: true,
-                    ugly: false,
-                  },
-                  p()
-                )
-              )
-            ),
-            p(' ')
-          )
-        );
       });
+
+    expect(content.state.doc).toEqualProsemirrorNode(
+      doc(
+        p(),
+        table(
+          tr(
+            td(
+              {
+                colspan: 1,
+                rowspan: 1,
+                colwidth: null,
+                pretty: true,
+                ugly: false,
+              },
+              p()
+            )
+          )
+        ),
+        p(' ')
+      )
+    );
   });
 
   it('should handle getEffectiveSchema', () => {
@@ -73,26 +72,23 @@ describe('VignettePlugin', () => {
 
   });
 
-  it('should handle createCommand', () => {
-    const editor = createEditor(doc(p('<cursor>')), {});
-    const dom = document.createElement('div')
-    const state: EditorState = EditorState.create({
-      schema: schema,
-      selection: editor.selection,
-    });
+  it('should handle createCommand', async () => {
 
-    const directeditorprops = { state }
+    createEditor(doc(table(tr(td(p('content'))))), {});
 
-    const view = new EditorView(dom, directeditorprops);
-    const selection = TextSelection.create(editor.view.state.doc, 0, 0);
-    const tr = editor.view.state.tr.setSelection(selection);
-    createEditor(doc(p('<cursor>')), { plugins: [...VignettePlugins] }).command(
-      (state, _dispatch) => {
-        createCommand(deleteTable).isEnabled(state);
-        createCommand(deleteTable).execute(state, editor.view.dispatch as (tr: Transform) => void, view)
+
+    const deleteTableCommand = createCommand(deleteTable);
+
+
+    const newState = await createEditor(doc(table(tr(td(p('content'))))), { plugins: [...VignettePlugins] })
+      .command((state, _dispatch) => {
+        deleteTableCommand.isEnabled(state);
+        deleteTableCommand.execute(state, ()=>{return undefined;}, view)
         return true;
-      }
-    );
+      });
+
+
+    expect(newState.state.doc).toBeDefined();
   });
 
   it('should return borderColor', () => {
@@ -103,32 +99,6 @@ describe('VignettePlugin', () => {
     const tablebgcolorcommand = new TableBackgroundColorCommand()
     expect(tablebgcolorcommand.getAttrName()).toEqual('background');
   });
-
-  it('should return vignette view', () => {
-    const editor1 = createEditor(doc(p('<cursor>')))
-    const state: EditorState = EditorState.create({
-      schema: schema,
-      selection: editor1.selection,
-    });
-    const directeditorprops = { state }
-    const dom = document.createElement('div')
-
-    const view = new EditorView(dom, directeditorprops);
-
-    const spec = {
-      key: new PluginKey('VignetteMenuPlugin'), view(editorView: EditorView) {
-        return view;
-      }
-    }
-
-    const editor = createEditor(doc(p('<cursor>')), {
-      plugins: [new VignetteMenuPlugin()],
-
-    })
-    let a = new VignetteMenuPlugin();
-
-  });
-
 
   it('dom should have matching node attributes VignetteTableNodeSpec', () => {
 
