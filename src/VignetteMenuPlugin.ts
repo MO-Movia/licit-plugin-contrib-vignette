@@ -1,13 +1,13 @@
-import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
-import {EditorView} from 'prosemirror-view';
-import {Node} from 'prosemirror-model';
+import { EditorState, Plugin, PluginKey } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Node } from 'prosemirror-model';
 
-import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
+import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
 import TableBackgroundColorCommand from './TableBackgroundColorCommand';
 import TableBorderColorCommand from './TableBorderColorCommand';
 import createCommand from './CreateCommand';
-import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
-import {TABLE} from './Constants';
+import { CellSelection, deleteTable, TableView } from 'prosemirror-tables';
+import { TABLE } from './Constants';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -23,7 +23,7 @@ const VIGNETTE_COMMANDS_GROUP = [
   },
 ];
 
-class VignetteView {
+export class VignetteView {
   constructor(editorView: EditorView) {
     this.setCustomMenu(editorView);
     this.setCustomTableNodeViewUpdate(editorView);
@@ -83,7 +83,10 @@ class VignetteView {
   }
 
   updateBorder(tableView: TableView) {
-    tableView.table.style.border = 'none';
+    if (tableView.table){
+      tableView.table.style.border = 'none';
+    }
+
   }
 
   static isVignette(state: EditorState, actionNode: Node) {
@@ -105,8 +108,8 @@ class VignetteView {
   getMenu(
     state: EditorState,
     actionNode: Node,
-    cmdGrps: Array<{[key: string]: UICommand}>
-  ): Array<{[key: string]: UICommand}> {
+    cmdGrps: Array<{ [key: string]: UICommand }>
+  ): Array<{ [key: string]: UICommand }> {
     const vignette = VignetteView.isVignette(state, actionNode);
 
     cmdGrps.forEach((cmdGrp) => {
@@ -127,7 +130,7 @@ class VignetteView {
   ): boolean {
     return VignetteView.isVignette(state, null)
       ? false
-      : isEnabled.call(this as UICommand, state, view);
+      : isEnabled.call(this as unknown as UICommand, state, view);
   }
 
   destroy = (): void => {
@@ -144,7 +147,10 @@ const SPEC = {
 
 class VignetteMenuPlugin extends Plugin {
   constructor() {
-    super(SPEC);
+
+      super(SPEC);
+
+
   }
 }
 
