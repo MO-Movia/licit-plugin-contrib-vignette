@@ -102,7 +102,7 @@
     "write-file-webpack-plugin": "^4.5.1"
   },
   "peerDependencies": {
-    "@modusoperandi/licit-ui-commands": "^0.1.18"
+    "@modusoperandi/licit-ui-commands": "1.0.0"
   },
   "dependencies": {
     "@babel/plugin-proposal-json-strings": "^7.18.6",
