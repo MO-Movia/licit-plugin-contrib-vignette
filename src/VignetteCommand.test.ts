@@ -43,7 +43,6 @@ describe('vignette command', () => {
   it('should handle selection validation in insertTable', () => {
     const vignettecommand = new VignetteCommand();
 
-    const sampleDoc = doc(p('Sample document content'));
     const sampleSchema = schema;
 
     const trWithCursorSelection = state.tr;

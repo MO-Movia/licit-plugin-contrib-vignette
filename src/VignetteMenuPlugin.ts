@@ -6,7 +6,7 @@ import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
 import {TableBorderColorCommand} from './TableBorderColorCommand';
 import {createCommand} from './CreateCommand';
-import {CellSelection, deleteTable,TableView} from 'prosemirror-tables';
+import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
@@ -62,8 +62,8 @@ export class VignetteView {
     node: Node,
     view: EditorView
   ): TableView {
-    const base = tableNodeView && tableNodeView(node, view);
-    if (base && base.update && node.attrs.vignette) {
+    const base = tableNodeView?.(node, view);
+    if (base?.update && node.attrs.vignette) {
       base.update = this.updateEx.bind(base, base.update, this);
       this.updateBorder(base);
     }
@@ -93,7 +93,7 @@ export class VignetteView {
         vignette = true;
       }
     }
-    if (actionNode && actionNode.attrs.vignette) {
+    if (actionNode?.attrs.vignette) {
       vignette = true;
     }
     if (state.selection.$anchor.node(1).attrs.vignette) {

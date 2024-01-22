@@ -1,6 +1,5 @@
-import {VignetteMenuPlugin} from './VignetteMenuPlugin';
+import {VignetteMenuPlugin, VignetteView} from './VignetteMenuPlugin';
 import {EditorState} from 'prosemirror-state';
-import {VignetteView} from './VignetteMenuPlugin';
 import {EditorView} from 'prosemirror-view';
 import {createEditor, doc, p, schema} from 'jest-prosemirror';
 import {Fragment} from 'prosemirror-model';

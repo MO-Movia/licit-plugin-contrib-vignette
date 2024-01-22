@@ -72,7 +72,6 @@ export class TableColorCommand extends UICommand {
   };
 
   cancel(): void {
-    this._popUp && this._popUp.close(undefined);
+    this._popUp?.close(undefined);
   }
 }
-

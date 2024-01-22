@@ -20,7 +20,7 @@ export class VignetteCommand extends UICommand {
       tr = this.insertTable(tr, schema, 1, 1);
       tr = this.insertParagraph(state, tr);
       dispatch(tr);
-      view && view.focus();
+      view?.focus();
     }
 
     return true;
@@ -99,4 +99,3 @@ export class VignetteCommand extends UICommand {
     return tr;
   }
 }
-
