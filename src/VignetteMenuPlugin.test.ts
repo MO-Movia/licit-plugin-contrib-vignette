@@ -9,6 +9,7 @@ import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
 import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
 import {TableBorderColorCommand} from './TableBorderColorCommand';
 import {createCommand} from './CreateCommand';
+import { Node } from 'prosemirror-model';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -41,6 +42,14 @@ describe('VignetteMenuPlugin', () => {
   );
   const view = new EditorView(dom, directeditorprops);
   let v = new VignetteView(view);
+
+  it('dom should call setCustomMenu', () => {
+    const state: EditorState = EditorState.create({
+      schema: schema,
+      selection: editor.selection,
+    });
+    expect(VignetteView.isVignette(state, null as unknown as Node)).toBeFalsy();
+  });
 
   it('dom should call setCustomMenu', () => {
     expect(VignetteView.isVignette(view.state, node)).toBeTruthy();

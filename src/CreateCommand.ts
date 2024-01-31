@@ -55,6 +55,16 @@ export function createCommand(execute: ExecuteCall): UICommand {
     cancel(): void {
       return null;
     }
+
+    renderLabel() {
+      return null;
+    }
+    isActive(): boolean {
+      return true;
+    }
+    executeCustom(_state: EditorState, tr: Transform): Transform {
+      return tr;
+    }
   }
   return new CustomCommand();
 }

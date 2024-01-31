@@ -4,7 +4,7 @@ import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {DEF_BORDER_COLOR, PARAGRAPH, TABLE, TABLE_CELL} from './Constants';
 import * as React from 'react';
-import { Transform } from 'prosemirror-transform';
+import {Transform} from 'prosemirror-transform';
 
 export class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
@@ -120,6 +120,16 @@ export class VignetteCommand extends UICommand {
       from + tr.selection.$head.node(1).nodeSize - 4,
       Fragment.from(paragraphNode)
     );
+    return tr;
+  }
+  renderLabel() {
+    return null;
+  }
+
+  isActive(): boolean {
+    return true;
+  }
+  executeCustom(_state: EditorState, tr: Transform): Transform {
     return tr;
   }
 }

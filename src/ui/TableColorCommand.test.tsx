@@ -4,6 +4,8 @@ import {EditorState} from 'prosemirror-state';
 import {createEditor, doc, p} from 'jest-prosemirror';
 import React from 'react';
 import {EditorView} from 'prosemirror-view';
+import {Transform} from 'prosemirror-transform';
+import { PopUpHandle } from '@modusoperandi/licit-ui-commands';
 
 describe('Table color command', () => {
   jest.mock('prosemirror-tables', () => {
@@ -57,10 +59,10 @@ describe('Table color command', () => {
 
 
   it('should wait for user input and return false when event.currentTarget is not an HTML element', async () => {
-    tableColorCommand._popUp = null;
+    tableColorCommand._popUp = undefined;
     const invalidMouseEvent = {
       currentTarget: null,
-    } as React.ChangeEvent<HTMLInputElement>;
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
     const result = await tableColorCommand.waitForUserInput(
       state,
       undefined,
@@ -70,11 +72,25 @@ describe('Table color command', () => {
     expect(result).toBeFalsy();
   });
 
+  it('should wait for user input and return false when event.currentTarget is not an HTML element', async () => {
+    const invalidMouseEvent = {
+      currentTarget: document.createElement('div'),
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    const result = tableColorCommand.waitForUserInput(
+      state,
+      undefined,
+      undefined,
+      invalidMouseEvent
+    );
+    tableColorCommand._popUp?.close(false);
+    expect(await result).toBeFalsy();
+  });
+
 
 
 
   it('should return a resolved promise when _popUp is truthy', async () => {
-    tableColorCommand._popUp = {};
+    tableColorCommand._popUp = {} as unknown as PopUpHandle;
 
     const result = await tableColorCommand.waitForUserInput(
       state,
@@ -97,5 +113,29 @@ describe('Table color command', () => {
     );
     expect(result).toBeTruthy();
     expect(dispatchMock).not.toHaveBeenCalled();
+  });
+
+  it('should cancel', () => {
+    tableColorCommand._popUp = undefined;
+    expect(tableColorCommand.cancel()).toBeFalsy();
+  });
+
+  it('should render label', () => {
+    expect(tableColorCommand.renderLabel()).toBeNull();
+  });
+
+  it('should be active', () => {
+    expect(tableColorCommand.isActive()).toBeTruthy();
+  });
+
+  it('should execute Custom', () => {
+    const mockState = null as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(tableColorCommand.executeCustom(mockState, mockTr)).toBe(mockTr);
+  });
+
+  it('should execute with user input', () => {
+    const mockState = null as unknown as EditorState;
+    expect(tableColorCommand.executeWithUserInput(mockState)).toBeFalsy();
   });
 });

@@ -3,6 +3,7 @@ import {schema} from 'prosemirror-test-builder';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {createEditor, doc, p} from 'jest-prosemirror';
 import {EditorView} from 'prosemirror-view';
+import {Transform} from 'prosemirror-transform';
 
 describe('vignette command', () => {
   const editor = createEditor(doc(p('<cursor>')), {});
@@ -69,5 +70,27 @@ describe('vignette command', () => {
     );
 
     expect(resultWithNonEmptySelection).toBe(trWithNonEmptySelection);
+  });
+
+  it('should cancel', () => {
+    const command = new VignetteCommand();
+    expect(command.cancel()).toBeNull();
+  });
+
+  it('should render label', () => {
+    const command = new VignetteCommand();
+    expect(command.renderLabel()).toBeNull();
+  });
+
+  it('should be active', () => {
+    const command = new VignetteCommand();
+    expect(command.isActive()).toBeTruthy();
+  });
+
+  it('should execute Custom', () => {
+    const command = new VignetteCommand();
+    const mockState = null as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(command.executeCustom(mockState, mockTr)).toBe(mockTr);
   });
 });

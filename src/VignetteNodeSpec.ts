@@ -2,7 +2,7 @@ import {Node, NodeSpec} from 'prosemirror-model';
 import {TABLE, VIGNETTE} from './Constants';
 
 // Override the default table node spec to support custom attributes.
-export const VignetteTableNodeSpec = (nodespec: NodeSpec) => ({
+export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ...nodespec,
   attrs: {
     marginLeft: {default: null},
@@ -27,7 +27,7 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec) => ({
       style: 'border',
     },
   ],
-  toDOM(node: Node): Array<unknown> {
+  toDOM(node: Node) {
     // Normally, the DOM structure of the table node is rendered by
     // `TableNodeView`. This method is only called when user selects a
     // table node and copies it, which triggers the "serialize to HTML" flow
@@ -43,7 +43,7 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec) => ({
   },
 });
 
-export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) => ({
+export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ...nodespec,
   attrs: {...nodespec.attrs, vignette: {default: false}},
   parseDOM: [
@@ -57,7 +57,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) => ({
       },
     },
   ],
-  toDOM(node: Node): Array<unknown> {
+  toDOM(node: Node) {
     const base = nodespec.toDOM(node);
     if (
       node.attrs.vignette &&
@@ -71,6 +71,6 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec) => ({
 
     base[1].vignette = node.attrs.vignette;
 
-    return base as unknown as Array<unknown>;
+    return base;
   },
 });
