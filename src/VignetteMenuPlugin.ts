@@ -1,6 +1,6 @@
-import { EditorState, Plugin, PluginKey } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { Node } from 'prosemirror-model';
+import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
+import {EditorView} from 'prosemirror-view';
+import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
@@ -33,7 +33,7 @@ export class VignetteView {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
-        Object.prototype.hasOwnProperty.call(pluginView, '_cellElement')
+        Object.hasOwn(pluginView, '_cellElement')
       ) {
         pluginView['getMenu'] = this.getMenu.bind(this);
       }
@@ -83,10 +83,9 @@ export class VignetteView {
   }
 
   updateBorder(tableView: TableView) {
-    if (tableView.table){
+    if (tableView.table) {
       tableView.table.style.border = 'none';
     }
-
   }
 
   static isVignette(state: EditorState, actionNode: Node) {
@@ -108,8 +107,8 @@ export class VignetteView {
   getMenu(
     state: EditorState,
     actionNode: Node,
-    cmdGrps: Array<{ [key: string]: UICommand }>
-  ): Array<{ [key: string]: UICommand }> {
+    cmdGrps: Array<{[key: string]: UICommand}>
+  ): Array<{[key: string]: UICommand}> {
     const vignette = VignetteView.isVignette(state, actionNode);
 
     cmdGrps.forEach((cmdGrp) => {
@@ -147,9 +146,6 @@ const SPEC = {
 
 export class VignetteMenuPlugin extends Plugin {
   constructor() {
-
-      super(SPEC);
-
-
+    super(SPEC);
   }
 }
