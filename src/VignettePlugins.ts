@@ -1,7 +1,7 @@
 import {VignettePlugin} from './VignettePlugin';
-import VignetteMenuPlugin from './VignetteMenuPlugin';
+import {VignetteMenuPlugin }from './VignetteMenuPlugin';
 
-export default [
+export const VignettePlugins =  [
   new VignetteMenuPlugin(),
   new VignettePlugin(),
 ];

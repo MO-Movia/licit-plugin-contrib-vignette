@@ -8,13 +8,14 @@ import {EditorView} from 'prosemirror-view';
 
 import {
   ColorEditor,
+  PopUpHandle,
   atAnchorRight,
   createPopUp,
 } from '@modusoperandi/licit-ui-commands';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 
-class TableColorCommand extends UICommand {
-  _popUp:any = null;
+export class TableColorCommand extends UICommand {
+  _popUp?: PopUpHandle = null;
 
   getAttrName = (): string => {
     return '';
@@ -42,7 +43,7 @@ class TableColorCommand extends UICommand {
       return Promise.resolve(undefined);
     }
 
-    const anchor = event ? event.currentTarget : null;
+    const anchor = event?.currentTarget;
     return new Promise((resolve) => {
       this._popUp = createPopUp(ColorEditor, null, {
         anchor,
@@ -72,8 +73,16 @@ class TableColorCommand extends UICommand {
   };
 
   cancel(): void {
-    this._popUp && this._popUp.close(undefined);
+    this._popUp?.close(undefined);
+  }
+
+  renderLabel() {
+    return null;
+  }
+  isActive(): boolean {
+    return true;
+  }
+  executeCustom(_state: EditorState, tr: Transform): Transform {
+    return tr;
   }
 }
-
-export default TableColorCommand;
