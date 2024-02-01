@@ -3,9 +3,9 @@ import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import TableBackgroundColorCommand from './TableBackgroundColorCommand';
-import TableBorderColorCommand from './TableBorderColorCommand';
-import createCommand from './CreateCommand';
+import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
+import {TableBorderColorCommand} from './TableBorderColorCommand';
+import {createCommand} from './CreateCommand';
 import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
@@ -23,7 +23,7 @@ const VIGNETTE_COMMANDS_GROUP = [
   },
 ];
 
-class VignetteView {
+export class VignetteView {
   constructor(editorView: EditorView) {
     this.setCustomMenu(editorView);
     this.setCustomTableNodeViewUpdate(editorView);
@@ -33,7 +33,7 @@ class VignetteView {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
-        Object.prototype.hasOwnProperty.call(pluginView, '_cellElement')
+        Object.hasOwn(pluginView, '_cellElement')
       ) {
         pluginView['getMenu'] = this.getMenu.bind(this);
       }
@@ -62,8 +62,8 @@ class VignetteView {
     node: Node,
     view: EditorView
   ): TableView {
-    const base = tableNodeView && tableNodeView(node, view);
-    if (base && base.update && node.attrs.vignette) {
+    const base = tableNodeView?.(node, view);
+    if (base?.update && node.attrs.vignette) {
       base.update = this.updateEx.bind(base, base.update, this);
       this.updateBorder(base);
     }
@@ -83,7 +83,9 @@ class VignetteView {
   }
 
   updateBorder(tableView: TableView) {
-    tableView.table.style.border = 'none';
+    if (tableView.table) {
+      tableView.table.style.border = 'none';
+    }
   }
 
   static isVignette(state: EditorState, actionNode: Node) {
@@ -93,7 +95,7 @@ class VignetteView {
         vignette = true;
       }
     }
-    if (actionNode && actionNode.attrs.vignette) {
+    if (actionNode?.attrs.vignette) {
       vignette = true;
     }
     if (state.selection.$anchor.node(1).attrs.vignette) {
@@ -107,7 +109,7 @@ class VignetteView {
     actionNode: Node,
     cmdGrps: Array<{[key: string]: UICommand}>
   ): Array<{[key: string]: UICommand}> {
-    let vignette = VignetteView.isVignette(state, actionNode);
+    const vignette = VignetteView.isVignette(state, actionNode);
 
     cmdGrps.forEach((cmdGrp) => {
       Object.entries(cmdGrp).forEach((entry) => {
@@ -127,7 +129,7 @@ class VignetteView {
   ): boolean {
     return VignetteView.isVignette(state, null)
       ? false
-      : isEnabled.call(this as UICommand, state, view);
+      : isEnabled.call(this as unknown as UICommand, state, view);
   }
 
   destroy = (): void => {
@@ -142,10 +144,8 @@ const SPEC = {
   },
 };
 
-class VignetteMenuPlugin extends Plugin {
+export class VignetteMenuPlugin extends Plugin {
   constructor() {
     super(SPEC);
   }
 }
-
-export default VignetteMenuPlugin;

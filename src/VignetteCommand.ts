@@ -3,8 +3,10 @@ import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {DEF_BORDER_COLOR, PARAGRAPH, TABLE, TABLE_CELL} from './Constants';
+import * as React from 'react';
+import {Transform} from 'prosemirror-transform';
 
-class VignetteCommand extends UICommand {
+export class VignetteCommand extends UICommand {
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
     return this.__isEnabled(state, view);
   };
@@ -20,11 +22,33 @@ class VignetteCommand extends UICommand {
       tr = this.insertTable(tr, schema, 1, 1);
       tr = this.insertParagraph(state, tr);
       dispatch(tr);
-      view && view.focus();
+      view?.focus();
     }
 
     return true;
   };
+
+  waitForUserInput = (
+    _state: EditorState,
+    _dispatch: (tr: Transform) => void,
+    _view: EditorView,
+    _event: React.SyntheticEvent<Element, Event>
+  ): Promise<undefined> => {
+    return Promise.resolve(undefined);
+  };
+
+  executeWithUserInput = (
+    _state: EditorState,
+    _dispatch: (tr: Transform) => void,
+    _view: EditorView,
+    _inputs: string
+  ): boolean => {
+    return false;
+  };
+
+  cancel(): void {
+    return null;
+  }
 
   __isEnabled = (_state: EditorState, _view?: EditorView): boolean => {
     return true;
@@ -98,6 +122,14 @@ class VignetteCommand extends UICommand {
     );
     return tr;
   }
-}
+  renderLabel() {
+    return null;
+  }
 
-export default VignetteCommand;
+  isActive(): boolean {
+    return true;
+  }
+  executeCustom(_state: EditorState, tr: Transform): Transform {
+    return tr;
+  }
+}

@@ -1,9 +1,8 @@
-import TableColorCommand from './ui/TableColorCommand';
+import {TableColorCommand} from './ui/TableColorCommand';
 
-class TableBackgroundColorCommand extends TableColorCommand {
+export class TableBackgroundColorCommand extends TableColorCommand {
   getAttrName = (): string => {
     return 'background';
   };
 }
 
-export default TableBackgroundColorCommand;
