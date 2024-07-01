@@ -1,15 +1,16 @@
-import {VignetteMenuPlugin, VignetteView} from './VignetteMenuPlugin';
-import {EditorState} from 'prosemirror-state';
-import {EditorView} from 'prosemirror-view';
-import {createEditor, doc, p, schema} from 'jest-prosemirror';
-import {Fragment} from 'prosemirror-model';
-import {VignettePlugin} from './VignettePlugin';
-import {VignettePlugins} from './index';
-import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
-import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
-import {TableBorderColorCommand} from './TableBorderColorCommand';
-import {createCommand} from './CreateCommand';
+import { VignetteMenuPlugin, VignetteView } from './VignetteMenuPlugin';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { createEditor, doc, p, schema } from 'jest-prosemirror';
+import { Fragment } from 'prosemirror-model';
+import { VignettePlugin } from './VignettePlugin';
+import { VignettePlugins } from './index';
+import { CellSelection, deleteTable, TableView } from 'prosemirror-tables';
+import { TableBackgroundColorCommand } from './TableBackgroundColorCommand';
+import { TableBorderColorCommand } from './TableBorderColorCommand';
+import { createCommand } from './CreateCommand';
 import { Node } from 'prosemirror-model';
+import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
 const TABLE_BORDER_COLOR = new TableBorderColorCommand();
@@ -20,7 +21,7 @@ describe('VignetteMenuPlugin', () => {
     plugins: [...VignettePlugins],
   });
   const node1 = schema.nodes.table_cell.create(
-    {vignette: true, style: ''},
+    { vignette: true, style: '' },
     Fragment.empty
   );
   const state: EditorState = EditorState.create({
@@ -29,7 +30,7 @@ describe('VignetteMenuPlugin', () => {
     plugins: [new VignetteMenuPlugin()],
   });
 
-  const directeditorprops = {state, focus};
+  const directeditorprops = { state, focus };
 
   const dom = document.createElement('div');
   dom.setAttribute('style', 'margin-left: 10px');
@@ -37,7 +38,7 @@ describe('VignetteMenuPlugin', () => {
   const schema1 = createEditor(doc(p('<cursor>'))).schema;
   const newSchema = new VignettePlugin().getEffectiveSchema(schema1);
   const node = newSchema.nodes.table.create(
-    {marginLeft: '10px', vignette: 'true'},
+    { marginLeft: '10px', vignette: 'true' },
     Fragment.empty
   );
   const view = new EditorView(dom, directeditorprops);
@@ -87,10 +88,10 @@ describe('VignetteMenuPlugin', () => {
       {
         'Fill Color...': TABLE_BACKGROUND_COLOR,
         'Border Color....': TABLE_BORDER_COLOR,
-      },
+      } as unknown as { [key: string]: UICommand },
       {
         'Delete Vignette': TABLE_DELETE_TABLE,
-      },
+      } as unknown as { [key: string]: UICommand },
     ];
     expect(
       vignetteview.getMenu(state, node, VIGNETTE_COMMANDS_GROUP)
@@ -103,12 +104,12 @@ describe('VignetteMenuPlugin', () => {
       {
         'Fill Color...': TABLE_BACKGROUND_COLOR,
         'Border Color....': TABLE_BORDER_COLOR,
-      },
+      } as unknown as { [key: string]: UICommand },
       {
         'Delete Vignette': TABLE_DELETE_TABLE,
-      },
+      } as unknown as { [key: string]: UICommand },
     ];
-    const spy = jest.spyOn(VignetteView, 'isVignette').mockReturnValue(false);
+    jest.spyOn(VignetteView, 'isVignette').mockReturnValue(false);
     expect(
       vignetteview.getMenu(state, node, VIGNETTE_COMMANDS_GROUP)
     ).toBeTruthy();
@@ -122,7 +123,7 @@ describe('VignetteMenuPlugin', () => {
       plugins: [new VignetteMenuPlugin()],
     });
 
-    const view = new EditorView(document.createElement('div'), {state});
+    const view = new EditorView(document.createElement('div'), { state });
     const vignetteView = new VignetteView(view);
 
     expect(typeof vignetteView.getMenu).toBe('function');
@@ -131,10 +132,10 @@ describe('VignetteMenuPlugin', () => {
 
   it('should set custom node view and update nodeViews if index is not -1', () => {
     const editorView = {
-      nodeViews: {table: 'originalTableNodeView'},
+      nodeViews: { table: 'originalTableNodeView' },
       state: {
         plugins: [
-          {spec: {key: {key: 'tableColumnResizing$'}, props: {nodeViews: {}}}},
+          { spec: { key: { key: 'tableColumnResizing$' }, props: { nodeViews: {} } } },
         ],
       },
     };
@@ -143,7 +144,7 @@ describe('VignetteMenuPlugin', () => {
     const tableNodeViewExSpy = jest.fn();
     vignetteView.setCustomTableNodeViewUpdate({
       ...editorView,
-      nodeViews: {table: 'originalTableNodeView'},
+      nodeViews: { table: 'originalTableNodeView' },
     } as unknown as EditorView);
 
     expect(editorView.nodeViews['table']).toBeDefined();
@@ -164,7 +165,7 @@ describe('VignetteMenuPlugin', () => {
 
     const vignetteView = new VignetteView(view);
 
-    const mockNode = {attrs: {vignette: false}} as unknown as any;
+    const mockNode = { attrs: { vignette: false } } as unknown as any;
 
     const mockView = {} as unknown as EditorView;
 
@@ -190,7 +191,7 @@ describe('VignetteMenuPlugin', () => {
     const vignetteView = new VignetteView(view);
     const mockUpdate = jest.fn(() => false);
     const node = newSchema.nodes.table.create(
-      {marginLeft: '10px', vignette: 'true'},
+      { marginLeft: '10px', vignette: 'true' },
       Fragment.empty
     );
     const result = vignetteView.updateEx(mockUpdate, vignetteView, node);

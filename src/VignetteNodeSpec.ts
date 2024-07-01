@@ -1,18 +1,18 @@
-import {Node, NodeSpec} from 'prosemirror-model';
-import {TABLE, VIGNETTE} from './Constants';
+import { Node, NodeSpec } from 'prosemirror-model';
+import { TABLE, VIGNETTE } from './Constants';
 
 // Override the default table node spec to support custom attributes.
 export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ...nodespec,
   attrs: {
-    marginLeft: {default: null},
-    vignette: {default: false},
+    marginLeft: { default: null },
+    vignette: { default: false },
   },
   parseDOM: [
     {
       tag: TABLE,
       getAttrs(dom: HTMLElement): unknown {
-        const {marginLeft} = dom.style;
+        const { marginLeft } = dom.style;
         const vignette = dom.getAttribute(VIGNETTE) === 'true' || false;
         const marginAmount = parseFloat(marginLeft);
         if (
@@ -20,11 +20,11 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
           !Number.isNaN(marginAmount) &&
           marginLeft.includes('px')
         ) {
-          return {marginLeft: marginAmount, vignette};
+          return { marginLeft: marginAmount, vignette };
         }
-        return {vignette};
+        return { vignette };
       },
-      style: 'border',
+      // attribute removed : style: 'border',
     },
   ],
   toDOM(node: Node) {
@@ -32,8 +32,8 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
     // `TableNodeView`. This method is only called when user selects a
     // table node and copies it, which triggers the "serialize to HTML" flow
     //  that calles this method.
-    const {marginLeft, vignette} = node.attrs;
-    const domAttrs = {vignette};
+    const { marginLeft, vignette } = node.attrs;
+    const domAttrs = { vignette };
     let style = 'border: none';
     if (marginLeft) {
       style += `margin-left: ${marginLeft}px`;
@@ -45,7 +45,7 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
 
 export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ...nodespec,
-  attrs: {...nodespec.attrs, vignette: {default: false}},
+  attrs: { ...nodespec.attrs, vignette: { default: false } },
   parseDOM: [
     {
       tag: 'td',
