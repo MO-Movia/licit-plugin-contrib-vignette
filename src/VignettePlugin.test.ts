@@ -122,8 +122,9 @@ describe('VignettePlugin', () => {
         {
           getAttrs: (dom: string | HTMLElement) => {
             (dom as HTMLElement).setAttribute('style', 'margin-left: 10px');
-            return {marginLeft: '10px', vignette: 'true'};
+            return { marginLeft: '10px', vignette: 'true' };
           },
+          tag: ''
         },
       ],
     };
@@ -155,8 +156,9 @@ describe('VignettePlugin', () => {
       parseDOM: [
         {
           getAttrs: (dom: string | HTMLElement) => {
-            return {marginLeft: '10px', vignette: 'true'};
+            return { marginLeft: '10px', vignette: 'true' };
           },
+          tag: ''
         },
       ],
     };
@@ -187,8 +189,9 @@ describe('VignettePlugin', () => {
       parseDOM: [
         {
           getAttrs: (node: string | HTMLElement) => {
-            return {marginLeft: '10px', vignette: 'true'};
+            return { marginLeft: '10px', vignette: 'true' };
           },
+          tag: ''
         },
       ],
     };
@@ -219,8 +222,9 @@ describe('VignettePlugin', () => {
       parseDOM: [
         {
           getAttrs: (node: string | HTMLElement) => {
-            return {marginLeft: '10px', vignette: true};
+            return { marginLeft: '10px', vignette: true };
           },
+          tag: ''
         },
       ],
     };
