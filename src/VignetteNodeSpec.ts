@@ -1,4 +1,4 @@
-import {Node, NodeSpec} from 'prosemirror-model';
+import {Node, TagParseRule,NodeSpec} from 'prosemirror-model';
 import {TABLE, VIGNETTE} from './Constants';
 
 // Override the default table node spec to support custom attributes.
@@ -25,7 +25,7 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
         return {vignette};
       },
       style: 'border',
-    },
+    } as TagParseRule
   ],
   toDOM(node: Node) {
     // Normally, the DOM structure of the table node is rendered by
