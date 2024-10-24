@@ -1,12 +1,12 @@
-import {EditorState, Plugin, PluginKey, TextSelection} from 'prosemirror-state';
+import {EditorState, Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {Node} from 'prosemirror-model';
 
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import TableBackgroundColorCommand from './TableBackgroundColorCommand';
-import TableBorderColorCommand from './TableBorderColorCommand';
-import createCommand from './CreateCommand';
-import {deleteTable, TableView} from 'prosemirror-tables';
+import {TableBackgroundColorCommand} from './TableBackgroundColorCommand';
+import {TableBorderColorCommand} from './TableBorderColorCommand';
+import {createCommand} from './CreateCommand';
+import {CellSelection, deleteTable, TableView} from 'prosemirror-tables';
 import {TABLE} from './Constants';
 
 const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
@@ -23,7 +23,7 @@ const VIGNETTE_COMMANDS_GROUP = [
   },
 ];
 
-class VignetteView {
+export class VignetteView {
   constructor(editorView: EditorView) {
     this.setCustomMenu(editorView);
     this.setCustomTableNodeViewUpdate(editorView);
@@ -33,7 +33,7 @@ class VignetteView {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
-        Object.prototype.hasOwnProperty.call(pluginView, '_cellElement')
+        Object.hasOwn(pluginView, '_cellElement')
       ) {
         pluginView['getMenu'] = this.getMenu.bind(this);
       }
@@ -62,8 +62,8 @@ class VignetteView {
     node: Node,
     view: EditorView
   ): TableView {
-    const base = tableNodeView && tableNodeView(node, view);
-    if (base && base.update && node.attrs.vignette) {
+    const base = tableNodeView?.(node, view);
+    if (base?.update && node.attrs.vignette) {
       base.update = this.updateEx.bind(base, base.update, this);
       this.updateBorder(base);
     }
@@ -83,22 +83,23 @@ class VignetteView {
   }
 
   updateBorder(tableView: TableView) {
-    tableView.table.style.border = 'none';
+    if (tableView.table) {
+      tableView.table.style.border = 'none';
+    }
   }
 
-  static isVignette(state: EditorState, _actionNode: Node) {
+  static isVignette(state: EditorState, actionNode: Node) {
     let vignette = false;
-    const selection = state.selection;
-    if (selection.constructor.name === TextSelection.name) {
-      if (selection.from === selection.to) {
-        const $head = selection.$head;
-        for (let d = 0; $head.depth > d && !vignette; d++) {
-          const n = $head.node(d);
-          if (n.type.name == 'table' && n.attrs['vignette']) {
-            vignette = true;
-          }
-        }
+    if (state.selection instanceof CellSelection) {
+      if (state.selection.$anchorCell.node(-1).attrs.vignette) {
+        vignette = true;
       }
+    }
+    if (actionNode?.attrs.vignette) {
+      vignette = true;
+    }
+    if (state.selection.$anchor.node(1).attrs.vignette) {
+      vignette = true;
     }
     return vignette;
   }
@@ -106,12 +107,9 @@ class VignetteView {
   getMenu(
     state: EditorState,
     actionNode: Node,
-    cmdGrps: Array<{[key: string]: UICommand}>,
-    icon: {name: string}
+    cmdGrps: Array<{[key: string]: UICommand}>
   ): Array<{[key: string]: UICommand}> {
     const vignette = VignetteView.isVignette(state, actionNode);
-
-    icon.name = vignette ? 'more_horiz' : icon.name;
 
     cmdGrps.forEach((cmdGrp) => {
       Object.entries(cmdGrp).forEach((entry) => {
@@ -146,10 +144,8 @@ const SPEC = {
   },
 };
 
-class VignetteMenuPlugin extends Plugin {
+export class VignetteMenuPlugin extends Plugin {
   constructor() {
     super(SPEC);
   }
 }
-
-export default VignetteMenuPlugin;

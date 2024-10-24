@@ -1,16 +1,17 @@
 // Plugin to handle Citation.
 import {Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
-import {Schema, Slice} from 'prosemirror-model';
-import VignetteCommand from './VignetteCommand';
+import {Schema} from 'prosemirror-model';
+import {VignetteCommand} from './VignetteCommand';
 import {
   VignetteTableCellNodeSpec,
   VignetteTableNodeSpec,
 } from './VignetteNodeSpec';
 import {TABLE, TABLE_CELL} from './Constants';
-import {isAllowed} from './Helper';
+import {DarkThemeIcon, LightThemeIcon} from './images';
 
 export class VignettePlugin extends Plugin {
+  _view: EditorView = null;
   constructor() {
     super({
       key: new PluginKey('VignettePlugin'),
@@ -24,38 +25,8 @@ export class VignettePlugin extends Plugin {
       },
       props: {
         nodeViews: {},
-        handlePaste(
-          view: EditorView,
-          _event: ClipboardEvent,
-          slice: Slice
-        ): boolean | void {
-          return (this as unknown as VignettePlugin).isAllowed(view, slice);
-        },
-        handleDrop(
-          view: EditorView,
-          _event: DragEvent,
-          slice: Slice
-        ): boolean | void {
-          return (this as unknown as VignettePlugin).isAllowed(view, slice);
-        },
       },
     });
-  }
-
-  isAllowed(view: EditorView, slice: Slice): boolean {
-    // check if copied content have table.
-    let allowed = true;
-    let haveTable = false;
-    for (let i = 0; i < slice.content.childCount; i++) {
-      if ('table' == slice.content.child(i).type.name) {
-        haveTable = true;
-      }
-    }
-
-    if (haveTable) {
-      allowed = isAllowed(view.state.selection);
-    }
-    return !allowed;
   }
 
   getEffectiveSchema(schema: Schema): Schema {
@@ -75,9 +46,16 @@ export class VignettePlugin extends Plugin {
     });
   }
 
-  initButtonCommands() {
+  initButtonCommands(theme: string) {
+
+    let image = null;
+    if ('light' == theme) {
+      image = LightThemeIcon;
+    } else {
+      image = DarkThemeIcon;
+    }
     return {
-      '[crop] Insert Vignette': new VignetteCommand(),
+      [`[${image}] Add Vignette`]: new VignetteCommand(),
     };
   }
 }
