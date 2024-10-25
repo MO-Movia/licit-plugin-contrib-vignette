@@ -235,7 +235,7 @@ describe('VignettePlugin', () => {
         marginLeft: '10px',
         vignette: true,
         style:
-          'trueborder-radius: 10px; border-style: solid; border-width: thin',
+          "trueborder-radius: 10px; border:none!important; box-shadow: inset 0 0 0 1px #36598d;",
       },
     ]);
 
