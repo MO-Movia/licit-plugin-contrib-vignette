@@ -48,7 +48,7 @@ export class TableColorCommand extends UICommand {
     const {from, to} = selection;
     const markType = schema.marks[MARK_TEXT_COLOR];
     const result = findNodesWithSameMark(doc, from, to, markType);
-    const hex = result ? result.mark.attrs.color : null;
+    const hex = result?.mark.attrs.color ?? null;
     const anchor = event?.currentTarget;
     const node = _state.tr.doc.nodeAt(from);
     const Textmark = node?.marks.find((mark) => mark?.attrs?.color);
