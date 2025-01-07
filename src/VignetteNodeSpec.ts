@@ -59,6 +59,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ],
   toDOM(node: Node) {
     const base = nodespec.toDOM(node);
+    const borderColor = node.attrs.borderColor || '#36598d';;
     if (
       node.attrs.vignette &&
       Array.isArray(base) &&
@@ -66,7 +67,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
       base[1].style
     ) {
       base[1].style +=
-      'border-radius: 10px; border:none!important; box-shadow: inset 0 0 0 1px #36598d;';
+      `border-radius: 10px; border:none!important; box-shadow: inset 0 0 0 1px ${borderColor};`;
     }
 
     base[1].vignette = node.attrs.vignette;
