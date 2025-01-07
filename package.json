@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-vignette",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "subversion": "1",
   "description": "Vignette plugin built with ProseMirror",
@@ -26,6 +26,9 @@
   },
   "peerDependencies": {
     "@modusoperandi/licit-ui-commands": "^1.0.0"
+  },
+  "dependencies": {
+    "@modusoperandi/color-picker": "1.0.2"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.11.0",
@@ -90,8 +93,5 @@
     "*.json": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "@modusoperandi/color-picker": "^1.0.2"
   }
 }
