@@ -28,7 +28,7 @@
     "@modusoperandi/licit-ui-commands": "^1.0.0"
   },
   "dependencies": {
-    "@modusoperandi/color-picker": "1.0.2"
+    "@modusoperandi/color-picker": "^1.0.2"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.11.0",
