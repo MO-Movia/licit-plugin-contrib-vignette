@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-vignette",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "type": "module",
   "subversion": "1",
   "description": "Vignette plugin built with ProseMirror",
@@ -21,10 +21,14 @@
     "test": "jest --coverage",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i",
     "ci:bom": "cyclonedx-npm --ignore-npm-errors --short-PURLs --output-format XML --output-file dist/bom.xml",
-    "ci:build": "tsc --build && copyfiles --up 1 \"src/**/*.css\" dist  && copyfiles package.json dist"
+    "ci:build": "tsc --build && copyfiles --up 1 \"src/**/*.css\" dist  && copyfiles package.json dist",
+    "verify": "npm run lint -- --fix && npm run ci:build && npm run test:coverage && echo 'All Tests Passed!'"
   },
   "peerDependencies": {
     "@modusoperandi/licit-ui-commands": "^1.0.0"
+  },
+  "dependencies": {
+    "@modusoperandi/color-picker": "^1.0.2"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.11.0",
@@ -34,12 +38,12 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.2.0",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.3.3",
+    "@types/react": "^19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "ajv": "^8.12.0",
     "copyfiles": "^2.4.1",
-    "eslint": "^9.14.0",
+    "eslint": "^8.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^28.2.0",

@@ -1,17 +1,19 @@
 // @flow
 
-import nullthrows from 'nullthrows';
 import {EditorState} from 'prosemirror-state';
 import {setCellAttr} from 'prosemirror-tables';
 import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
 
 import {
-  ColorEditor,
   PopUpHandle,
   atAnchorRight,
   createPopUp,
+  findNodesWithSameMark,
+  MARK_TEXT_COLOR,
+  RuntimeService,
 } from '@modusoperandi/licit-ui-commands';
+import {ColorEditor} from '@modusoperandi/color-picker';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 
 export class TableColorCommand extends UICommand {
@@ -38,23 +40,38 @@ export class TableColorCommand extends UICommand {
     if (this._popUp) {
       return Promise.resolve(undefined);
     }
-    const target = nullthrows(event).currentTarget;
+    const target = event?.currentTarget;
     if (!(target instanceof HTMLElement)) {
       return Promise.resolve(undefined);
     }
-
+    const {doc, selection, schema} = _state;
+    const {from, to} = selection;
+    const markType = schema.marks[MARK_TEXT_COLOR];
+    const result = findNodesWithSameMark(doc, from, to, markType);
+    const hex = result?.mark.attrs.color ?? null;
     const anchor = event?.currentTarget;
+    const node = _state.tr.doc.nodeAt(from);
+    const Textmark = node?.marks.find((mark) => mark?.attrs?.color);
+    const Textcolor = Textmark?.attrs?.color;
+    // [FS] KNITE-1489 2024-12-25
+    // Fix:VIgnette Color and Border Palette GUIs should match GUIs of Font and Background tools in Doc Edit View
     return new Promise((resolve) => {
-      this._popUp = createPopUp(ColorEditor, null, {
-        anchor,
-        position: atAnchorRight,
-        onClose: (val) => {
-          if (this._popUp) {
-            this._popUp = null;
-            resolve(val);
-          }
-        },
-      });
+      this._popUp = createPopUp(
+        ColorEditor,
+        {hex, runtime: RuntimeService.Runtime, Textcolor},
+        {
+          anchor,
+          position: atAnchorRight,
+          popUpId: 'mo-menuList-child',
+          autoDismiss: true,
+          onClose: (val) => {
+            if (this._popUp) {
+              this._popUp = null;
+              resolve(val);
+            }
+          },
+        }
+      );
     });
   };
 
