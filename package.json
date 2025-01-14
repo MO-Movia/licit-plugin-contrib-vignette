@@ -38,7 +38,7 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.2.0",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.3.3",
+    "@types/react": "^19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "ajv": "^8.12.0",
