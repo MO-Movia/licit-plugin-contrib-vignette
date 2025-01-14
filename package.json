@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-vignette",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "subversion": "1",
   "description": "Vignette plugin built with ProseMirror",
@@ -25,10 +25,10 @@
     "verify": "npm run lint -- --fix && npm run ci:build && npm run test:coverage && echo 'All Tests Passed!'"
   },
   "peerDependencies": {
-    "@modusoperandi/licit-ui-commands": "^1.0.0"
+    "@modusoperandi/licit-ui-commands": "^1.0.8"
   },
   "dependencies": {
-    "@modusoperandi/color-picker": "^1.0.2"
+    "@modusoperandi/color-picker": "^1.0.4"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.11.0",
