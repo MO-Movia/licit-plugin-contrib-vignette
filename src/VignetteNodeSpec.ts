@@ -59,7 +59,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ],
   toDOM(node: Node) {
     const base = nodespec.toDOM(node);
-    const borderColor = node.attrs.borderColor || '#36598d';;
+    const borderColor = node.attrs.borderColor || '#36598d';
     if (
       node.attrs.vignette &&
       Array.isArray(base) &&
