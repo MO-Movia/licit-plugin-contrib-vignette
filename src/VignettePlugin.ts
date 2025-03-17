@@ -47,7 +47,7 @@ export class VignettePlugin extends Plugin {
 
   initButtonCommands() {
     return {
-      '[crop] Insert Vignette': new VignetteCommand(),
+      '[vignette] Insert Vignette': new VignetteCommand(),
     };
   }
 }
