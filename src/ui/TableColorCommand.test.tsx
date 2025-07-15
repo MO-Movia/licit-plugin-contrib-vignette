@@ -111,7 +111,7 @@ describe('Table color command', () => {
       view,
       color
     );
-    expect(result).toBeTruthy();
+    expect(result).toBeFalsy();
     expect(dispatchMock).not.toHaveBeenCalled();
   });
 
