@@ -1,18 +1,21 @@
 // @flow
 
-import nullthrows from 'nullthrows';
 import {EditorState} from 'prosemirror-state';
 import {setCellAttr} from 'prosemirror-tables';
 import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
 
 import {
-  ColorEditor,
   PopUpHandle,
   atAnchorRight,
   createPopUp,
+  findNodesWithSameMark,
+  MARK_TEXT_COLOR,
+  RuntimeService,
 } from '@modusoperandi/licit-ui-commands';
+import {ColorEditor} from '@modusoperandi/color-picker';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
+import React from 'react';
 
 export class TableColorCommand extends UICommand {
   _popUp?: PopUpHandle = null;
@@ -28,7 +31,9 @@ export class TableColorCommand extends UICommand {
   shouldRespondToUIEvent = (e: React.SyntheticEvent | MouseEvent): boolean => {
     return e.type === UICommand.EventType.MOUSEENTER;
   };
-
+  getEditor(): typeof React.Component {
+    return UICommand.prototype.editor;
+  }
   waitForUserInput = (
     _state: EditorState,
     _dispatch?: (tr: Transform) => void,
@@ -38,23 +43,38 @@ export class TableColorCommand extends UICommand {
     if (this._popUp) {
       return Promise.resolve(undefined);
     }
-    const target = nullthrows(event).currentTarget;
+    const target = event?.currentTarget;
     if (!(target instanceof HTMLElement)) {
       return Promise.resolve(undefined);
     }
-
+    const {doc, selection, schema} = _state;
+    const {from, to} = selection;
+    const markType = schema.marks[MARK_TEXT_COLOR];
+    const result = findNodesWithSameMark(doc, from, to, markType);
+    const hex = result?.mark.attrs.color ?? null;
     const anchor = event?.currentTarget;
+    const node = _state.tr.doc.nodeAt(from);
+    const Textmark = node?.marks.find((mark) => mark?.attrs?.color);
+    const Textcolor = Textmark?.attrs?.color;
+    // [FS] KNITE-1489 2024-12-25
+    // Fix:VIgnette Color and Border Palette GUIs should match GUIs of Font and Background tools in Doc Edit View
     return new Promise((resolve) => {
-      this._popUp = createPopUp(ColorEditor, null, {
-        anchor,
-        position: atAnchorRight,
-        onClose: (val) => {
-          if (this._popUp) {
-            this._popUp = null;
-            resolve(val);
-          }
-        },
-      });
+      this._popUp = createPopUp(
+        ColorEditor,
+        {hex, runtime: RuntimeService.Runtime, Textcolor},
+        {
+          anchor,
+          position: atAnchorRight,
+          popUpId: 'mo-menuList-child',
+          autoDismiss: true,
+          onClose: (val) => {
+            if (this._popUp) {
+              this._popUp = null;
+              resolve(val);
+            }
+          },
+        }
+      );
     });
   };
 
@@ -65,7 +85,8 @@ export class TableColorCommand extends UICommand {
     color?: string
   ): boolean => {
     if (dispatch && color !== undefined) {
-      const cmd = setCellAttr(this.getAttrName(), color);
+      // const cmd = setCellAttr(this.getAttrName(), color);
+      const cmd =  (this.getEditor() as any)?.commands.setCellAttribute(this.getAttrName(), color);
       cmd(state, dispatch, view);
       return true;
     }

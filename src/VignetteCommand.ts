@@ -86,7 +86,7 @@ export class VignetteCommand extends UICommand {
         const cellNode = cell.create(
           {
             borderColor: DEF_BORDER_COLOR,
-            background: '#dce6f2',
+            backgroundColor: '#dce6f2',
             vignette: true,
           },
           Fragment.fromArray([paragraph.create()])

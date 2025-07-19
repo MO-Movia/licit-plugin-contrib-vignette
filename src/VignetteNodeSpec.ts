@@ -67,7 +67,7 @@ export const VignetteTableCellNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
       base[1].style
     ) {
       base[1].style +=
-        'border-radius: 10px; border-style: solid; border-width: thin';
+      '; border-radius: 10px; border:none!important; box-shadow: inset 0 0 0 1px #36598d;';
     }
 
     base[1].vignette = node.attrs.vignette;

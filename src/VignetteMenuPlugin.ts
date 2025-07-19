@@ -33,9 +33,9 @@ export class VignetteView {
     editorView['pluginViews'].forEach((pluginView) => {
       if (
         // 'TableCellTooltipView' has property _cellElement
-        Object.hasOwn(pluginView, '_cellElement')
+        Object.hasOwn(pluginView, '_menu')
       ) {
-        pluginView['getMenu'] = this.getMenu.bind(this);
+        pluginView['_menu'] = this.getMenu.bind(this);
       }
     });
   }
