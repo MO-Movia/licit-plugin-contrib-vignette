@@ -79,10 +79,10 @@ export class TableColorCommand extends UICommand {
     state: EditorState,
     dispatch?: (tr: Transform) => void,
     view?: EditorView,
-    color?: string
+    color?: { color, selectedOption }
   ): boolean => {
-    if (dispatch && color !== undefined) {
-      const cmd = setCellAttr(this.getAttrName(), color);
+    if (dispatch && color?.color !== undefined) {
+      const cmd = setCellAttr(this.getAttrName(), color.color);
       cmd(state, dispatch, view);
       return true;
     }

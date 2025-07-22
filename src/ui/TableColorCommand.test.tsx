@@ -109,7 +109,7 @@ describe('Table color command', () => {
       state,
       dispatchMock,
       view,
-      color
+      {color:color,selectedOption:'top'}
     );
     expect(result).toBeTruthy();
     expect(dispatchMock).not.toHaveBeenCalled();
