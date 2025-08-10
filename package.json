@@ -10,7 +10,7 @@
   "style": "styles.css",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MO-Movia/licit-plugin-contrib-vignette"
+    "url": "https://github.com/MO-Movia/licit-plugin-contrib-vignette"
   },
   "scripts": {
     "clean": "rm -rf dist/ bin/ && rm -f modusoperandi-licit-vignette-*.*.*.tgz",
