@@ -15,7 +15,6 @@ import {
 } from '@modusoperandi/licit-ui-commands';
 import {ColorEditor} from '@modusoperandi/color-picker';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import React from 'react';
 
 export class TableColorCommand extends UICommand {
   _popUp?: PopUpHandle = null;
@@ -31,9 +30,7 @@ export class TableColorCommand extends UICommand {
   shouldRespondToUIEvent = (e: React.SyntheticEvent | MouseEvent): boolean => {
     return e.type === UICommand.EventType.MOUSEENTER;
   };
-  getEditor(): typeof React.Component {
-    return UICommand.prototype.editor;
-  }
+
   waitForUserInput = (
     _state: EditorState,
     _dispatch?: (tr: Transform) => void,
@@ -82,11 +79,10 @@ export class TableColorCommand extends UICommand {
     state: EditorState,
     dispatch?: (tr: Transform) => void,
     view?: EditorView,
-    color?: string
+    color?: { color, selectedOption }
   ): boolean => {
-    if (dispatch && color !== undefined) {
-      // const cmd = setCellAttr(this.getAttrName(), color);
-      const cmd =  (this.getEditor() as any)?.commands.setCellAttribute(this.getAttrName(), color);
+    if (dispatch && color?.color !== undefined) {
+      const cmd = setCellAttr(this.getAttrName(), color.color);
       cmd(state, dispatch, view);
       return true;
     }

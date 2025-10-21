@@ -1,206 +1,207 @@
-import { VignetteMenuPlugin, VignetteView } from './VignetteMenuPlugin';
-import { EditorState } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { createEditor, doc, p, schema } from 'jest-prosemirror';
-import { Fragment } from 'prosemirror-model';
-import { VignettePlugin } from './VignettePlugin';
-import { VignettePlugins } from './index';
-import { CellSelection, deleteTable, TableView } from 'prosemirror-tables';
-import { TableBackgroundColorCommand } from './TableBackgroundColorCommand';
-import { TableBorderColorCommand } from './TableBorderColorCommand';
-import { createCommand } from './CreateCommand';
-import { Node } from 'prosemirror-model';
-import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
+import { VignetteView, VignetteMenuPlugin } from './VignetteMenuPlugin';
+import { PluginKey } from 'prosemirror-state';
+import { TABLE } from './Constants';
 
-const TABLE_BACKGROUND_COLOR = new TableBackgroundColorCommand();
-const TABLE_BORDER_COLOR = new TableBorderColorCommand();
-const TABLE_DELETE_TABLE = createCommand(deleteTable);
-jest.mock('../src/assets/dark/Icon_Vignette.svg', () => 'Icon SVG content');
-jest.mock('../src/assets/light/Icon_Vignette.svg', () => 'Icon SVG content');
+jest.mock('prosemirror-tables', () => ({
+  CellSelection: class {
+    constructor() {
+      this.$anchorCell = { node: jest.fn(() => ({ attrs: { vignette: true } })) };
+    }
+  },
+  deleteTable: jest.fn(),
+  TableView: class {
+    constructor() {
+      this.table = { style: {} };
+      this.update = jest.fn(() => true);
+    }
+  },
+}));
 
-describe('VignetteMenuPlugin', () => {
-  const editor = createEditor(doc(p('<cursor>')), {
-    plugins: [...VignettePlugins],
-  });
-  const node1 = schema.nodes.table_cell.create(
-    { vignette: true, style: '' },
-    Fragment.empty
-  );
-  const state: EditorState = EditorState.create({
-    schema: schema,
-    selection: editor.selection,
-    plugins: [new VignetteMenuPlugin()],
-  });
+jest.mock('./TableBackgroundColorCommand', () => ({
+  TableBackgroundColorCommand: jest.fn(() => ({ name: 'bgCmd', isEnabled: jest.fn(() => true) })),
+}));
+jest.mock('./TableBorderColorCommand', () => ({
+  TableBorderColorCommand: jest.fn(() => ({ name: 'borderCmd', isEnabled: jest.fn(() => true) })),
+}));
+jest.mock('./CreateCommand', () => ({
+  createCommand: jest.fn(() => jest.fn()),
+}));
 
-  const directeditorprops = { state, focus };
+describe('VignetteView', () => {
+  let editorView: any;
+  let mockPluginViews: any[];
+  let mockNodeViews: any;
+  let plugin: any;
+  let mockState: any;
 
-  const dom = document.createElement('div');
-  dom.setAttribute('style', 'margin-left: 10px');
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-  const schema1 = createEditor(doc(p('<cursor>'))).schema;
-  const newSchema = new VignettePlugin().getEffectiveSchema(schema1);
-  const node = newSchema.nodes.table.create(
-    { marginLeft: '10px', vignette: 'true' },
-    Fragment.empty
-  );
-  const view = new EditorView(dom, directeditorprops);
-  let v = new VignetteView(view);
-
-  it('dom should call setCustomMenu', () => {
-    const state: EditorState = EditorState.create({
-      schema: schema,
-      selection: editor.selection,
-    });
-    expect(VignetteView.isVignette(state, null as unknown as Node)).toBeFalsy();
-  });
-
-  it('dom should call setCustomMenu', () => {
-    expect(VignetteView.isVignette(view.state, node)).toBeTruthy();
-  });
-
-  it('dom should call setCustomMenu', () => {
-    const editor = createEditor(doc(p('<cursor>')), {
-      plugins: [...VignettePlugins],
-    });
-    const state: EditorState = EditorState.create({
-      schema: schema,
-      selection: editor.selection as CellSelection,
-      plugins: [new VignetteMenuPlugin()],
-    });
-    expect(VignetteView.isVignette(state, node)).toBeTruthy();
-  });
-
-  it('dom should call isenabledeex', () => {
-    let isenabled = (state, view) => true;
-
-    let vignetteview = new VignetteView(view);
-    expect(vignetteview.isEnabledEx(isenabled, state)).toBeTruthy();
-  });
-
-  it('dom should call isenabledeex when isvignette is true', () => {
-    const spy = jest.spyOn(VignetteView, 'isVignette').mockReturnValue(true);
-    let isenabled = (state, view) => true;
-
-    let vignetteview = new VignetteView(view);
-    expect(vignetteview.isEnabledEx(isenabled, state)).toBeFalsy();
-  });
-  it('dom should call getMenu', () => {
-    let vignetteview = new VignetteView(view);
-    const VIGNETTE_COMMANDS_GROUP = [
-      {
-        'Fill Color...': TABLE_BACKGROUND_COLOR,
-        'Border Color....': TABLE_BORDER_COLOR,
-      } as unknown as { [key: string]: UICommand },
-      {
-        'Delete Vignette': TABLE_DELETE_TABLE,
-      } as unknown as { [key: string]: UICommand },
+    mockPluginViews = [
+      { _menu: true },
+      { _menu: false },
+      { somethingElse: true },
     ];
-    expect(
-      vignetteview.getMenu(state, node, VIGNETTE_COMMANDS_GROUP)
-    ).toBeTruthy();
-  });
 
-  it('dom should call getMenu', () => {
-    let vignetteview = new VignetteView(view);
-    const VIGNETTE_COMMANDS_GROUP = [
-      {
-        'Fill Color...': TABLE_BACKGROUND_COLOR,
-        'Border Color....': TABLE_BORDER_COLOR,
-      } as unknown as { [key: string]: UICommand },
-      {
-        'Delete Vignette': TABLE_DELETE_TABLE,
-      } as unknown as { [key: string]: UICommand },
-    ];
-    jest.spyOn(VignetteView, 'isVignette').mockReturnValue(false);
-    expect(
-      vignetteview.getMenu(state, node, VIGNETTE_COMMANDS_GROUP)
-    ).toBeTruthy();
-  });
+    mockNodeViews = {
+      table: jest.fn(() => ({
+        update: jest.fn(() => true),
+        table: { style: {} },
+      })),
+    };
 
-  it('should correctly initialize getMenu and tableNodeViewEx', () => {
-    const editor = createEditor(doc(p('<cursor>')));
-    const state = EditorState.create({
-      schema: editor.schema,
-      selection: editor.selection,
-      plugins: [new VignetteMenuPlugin()],
-    });
-
-    const view = new EditorView(document.createElement('div'), { state });
-    const vignetteView = new VignetteView(view);
-
-    expect(typeof vignetteView.getMenu).toBe('function');
-    expect(typeof vignetteView.tableNodeViewEx).toBe('function');
-  });
-
-  it('should set custom node view and update nodeViews if index is not -1', () => {
-    const editorView = {
-      nodeViews: { table: 'originalTableNodeView' },
-      state: {
-        plugins: [
-          { spec: { key: { key: 'tableColumnResizing$' }, props: { nodeViews: {} } } },
-        ],
+    plugin = {
+      spec: {
+        key: { key: 'tableColumnResizing$abc' },
+        props: { nodeViews: { [TABLE]: jest.fn() } },
       },
     };
 
-    const vignetteView = new VignetteView(view);
-    const tableNodeViewExSpy = jest.fn();
-    vignetteView.setCustomTableNodeViewUpdate({
-      ...editorView,
-      nodeViews: { table: 'originalTableNodeView' },
-    } as unknown as EditorView);
-
-    expect(editorView.nodeViews['table']).toBeDefined();
-
-    const pluginIndex = editorView.state.plugins.findIndex((plugin) =>
-      plugin.spec.key?.key.includes('tableColumnResizing$')
-    );
-    const updatedNodeView =
-      editorView.state.plugins[pluginIndex].spec.props.nodeViews['table'];
-    expect(updatedNodeView).toBeDefined();
-  });
-
-  it('should not call updateEx or updateBorder when node does not have vignette attribute', () => {
-    const mockTableNodeView = jest.fn();
-    mockTableNodeView.mockReturnValue({
-      update: jest.fn(),
-    });
-
-    const vignetteView = new VignetteView(view);
-
-    const mockNode = { attrs: { vignette: false } } as unknown as any;
-
-    const mockView = {} as unknown as EditorView;
-
-    const result = vignetteView.tableNodeViewEx(
-      mockTableNodeView,
-      mockNode,
-      mockView
-    );
-
-    expect(mockTableNodeView).toHaveBeenCalledWith(mockNode, mockView);
-    expect(result.update).toBeDefined();
-    expect(result.update).not.toHaveBeenCalled();
-  });
-
-  it('should not call updateEx or updateBorder when update returns false', () => {
-    const mockTableView = {
-      table: {
-        style: {
-          border: undefined,
-        },
+    mockState = {
+      selection: {
+        $anchor: { node: jest.fn(() => ({ attrs: { vignette: false } })) },
       },
-    } as unknown as TableView;
-    const vignetteView = new VignetteView(view);
-    const mockUpdate = jest.fn(() => false);
-    const node = newSchema.nodes.table.create(
-      { marginLeft: '10px', vignette: 'true' },
-      Fragment.empty
-    );
-    const result = vignetteView.updateEx(mockUpdate, vignetteView, node);
+      plugins: [plugin],
+    };
+
+    editorView = {
+      pluginViews: mockPluginViews,
+      nodeViews: mockNodeViews,
+      state: mockState,
+    };
+  });
+
+  test('constructor should call both setup methods', () => {
+    const spyMenu = jest.spyOn(VignetteView.prototype, 'setCustomMenu');
+    const spyUpdate = jest.spyOn(VignetteView.prototype, 'setCustomTableNodeViewUpdate');
+    new VignetteView(editorView);
+    expect(spyMenu).toHaveBeenCalledWith(editorView);
+    expect(spyUpdate).toHaveBeenCalledWith(editorView);
+  });
+
+  test('setCustomMenu should bind getMenu to menu-like pluginViews', () => {
+    const view = new VignetteView(editorView);
+    view.setCustomMenu(editorView);
+    expect(mockPluginViews[0]._menu).toBeInstanceOf(Function);
+    expect(mockPluginViews[1]._menu).toBeDefined();
+  });
+
+  test('setCustomTableNodeViewUpdate should patch nodeViews and plugin', () => {
+    new VignetteView(editorView);
+    expect(editorView.nodeViews[TABLE]).toBeInstanceOf(Function);
+    expect(plugin.spec.props.nodeViews[TABLE]).toBeInstanceOf(Function);
+  });
+
+  test('setCustomTableNodeViewUpdate should handle missing plugin key safely', () => {
+    editorView.state.plugins = [{ spec: {} }];
+    const view = new VignetteView(editorView);
+    view.setCustomTableNodeViewUpdate(editorView);
+    expect(typeof editorView.nodeViews[TABLE]).toBe('function');
+  });
+
+  test('tableNodeViewEx returns base view and calls updateBorder if vignette', () => {
+    const view = new VignetteView(editorView);
+    const node = { attrs: { vignette: true } };
+    const base = { update: jest.fn(), table: { style: {} } };
+    const spyUpdateBorder = jest.spyOn(view, 'updateBorder');
+    const result = view.tableNodeViewEx(() => base as any, node as any, {} as any);
+    expect(spyUpdateBorder).toHaveBeenCalled();
+    expect(result).toBe(base);
+  });
+
+  test('tableNodeViewEx returns base view without modification if not vignette', () => {
+    const view = new VignetteView(editorView);
+    const node = { attrs: { vignette: false } };
+    const base = { update: jest.fn() };
+    const result = view.tableNodeViewEx(() => base as any, node as any, {} as any);
+    expect(result).toBe(base);
+  });
+
+  test('updateEx calls inner update and triggers updateBorder if true', () => {
+    const view = new VignetteView(editorView);
+    const mockUpdate = jest.fn(() => true);
+    const mockSelf = { updateBorder: jest.fn() };
+    const tableView = { table: { style: {} } };
+    const result = view.updateEx.call(tableView, mockUpdate, mockSelf as any, { node: 'x' } as any);
     expect(mockUpdate).toHaveBeenCalled();
+    expect(mockSelf.updateBorder).toHaveBeenCalled();
+    expect(result).toBe(true);
+  });
 
-    expect(mockTableView.table.style.border).toBeUndefined();
-
+  test('updateEx does not trigger updateBorder if update returns false', () => {
+    const view = new VignetteView(editorView);
+    const mockUpdate = jest.fn(() => false);
+    const mockSelf = { updateBorder: jest.fn() };
+    const result = view.updateEx.call({}, mockUpdate, mockSelf as any, {} as any);
+    expect(mockSelf.updateBorder).not.toHaveBeenCalled();
     expect(result).toBe(false);
   });
+
+  test('updateBorder sets border to none if table exists', () => {
+    const tableView = { table: { style: {} } };
+    const view = new VignetteView(editorView);
+    view.updateBorder(tableView as any);
+    expect(tableView.table.style.border).toBe('none');
+  });
+
+  test('updateBorder safely ignores if table missing', () => {
+    const view = new VignetteView(editorView);
+    expect(() => view.updateBorder({} as any)).not.toThrow();
+  });
+
+  test('isVignette detects vignette in multiple locations', () => {
+    const CellSelection = require('prosemirror-tables').CellSelection;
+    const selection = new CellSelection();
+    const node = { attrs: { vignette: true } };
+    const state = {
+      selection,
+      selectionType: 'cell',
+      selectionMock: { $anchor: { node: jest.fn(() => ({ attrs: { vignette: false } })) } },
+    };
+    expect(VignetteView.isVignette(state as any, node as any)).toBe(true);
+  });
+
+  test('isVignette returns true if $anchor node vignette', () => {
+    const state = {
+      selection: { $anchor: { node: jest.fn(() => ({ attrs: { vignette: true } })) } },
+    };
+    expect(VignetteView.isVignette(state as any, { attrs: {} } as any)).toBe(true);
+  });
+
+  test('getMenu patches command isEnabled and returns vignette group if vignette', () => {
+    const view = new VignetteView(editorView);
+    jest.spyOn(VignetteView, 'isVignette').mockReturnValue(true);
+    const cmd = { isEnabled: jest.fn(() => true) };
+    const cmdGroups = [{ cmdA: cmd }];
+    const result = view.getMenu(mockState, { attrs: { vignette: true } } as any, cmdGroups as any);
+    expect(result).toBeInstanceOf(Array);
+    expect(result[0]).toBeDefined();
+  });
+
+  test('getMenu returns unmodified cmdGrps when not vignette', () => {
+    const view = new VignetteView(editorView);
+    jest.spyOn(VignetteView, 'isVignette').mockReturnValue(false);
+    const cmd = { isEnabled: jest.fn(() => true) };
+    const cmdGroups = [{ cmdA: cmd }];
+    const result = view.getMenu(mockState, { attrs: {} } as any, cmdGroups as any);
+    expect(result).toBe(cmdGroups);
+  });
+
+  test('isEnabledEx disables command if vignette else calls original', () => {
+    const view = new VignetteView(editorView);
+    const isEnabled = jest.fn(() => true);
+    jest.spyOn(VignetteView, 'isVignette').mockReturnValueOnce(true);
+    const result1 = view.isEnabledEx(isEnabled, mockState as any);
+    expect(result1).toBe(false);
+    jest.spyOn(VignetteView, 'isVignette').mockReturnValueOnce(false);
+    const result2 = view.isEnabledEx(isEnabled, mockState as any);
+    expect(result2).toBe(true);
+    expect(isEnabled).toHaveBeenCalled();
+  });
+
+  test('destroy does nothing safely', () => {
+    const view = new VignetteView(editorView);
+    expect(view.destroy()).toBeUndefined();
+  });
+
 });

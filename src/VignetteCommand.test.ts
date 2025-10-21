@@ -1,96 +1,161 @@
-import {VignetteCommand} from './VignetteCommand';
-import {schema} from 'prosemirror-test-builder';
-import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
-import {createEditor, doc, p} from 'jest-prosemirror';
-import {EditorView} from 'prosemirror-view';
-import {Transform} from 'prosemirror-transform';
+import { VignetteCommand } from './VignetteCommand';
+import { Fragment } from 'prosemirror-model';
+import { TextSelection } from 'prosemirror-state';
+import { Transform } from 'prosemirror-transform';
+import { DEF_BORDER_COLOR, TABLE, TABLE_CELL, PARAGRAPH } from './Constants';
 
-describe('vignette command', () => {
-  const editor = createEditor(doc(p('<cursor>')), {});
-  const state: EditorState = EditorState.create({
-    schema: schema,
-    selection: editor.selection,
+jest.mock('prosemirror-model', () => ({
+  Fragment: {
+    fromArray: jest.fn((arr) => arr),
+    from: jest.fn((obj) => obj),
+  },
+}));
+
+jest.mock('prosemirror-state', () => ({
+  TextSelection: {
+    create: jest.fn((_doc, from, to) => ({ from, to })),
+  },
+}));
+
+describe('VignetteCommand', () => {
+  let cmd: VignetteCommand;
+  let mockDispatch: jest.Mock;
+  let mockView: any;
+  let mockTr: any;
+  let mockState: any;
+  let schemaNodes: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    schemaNodes = {
+      [TABLE_CELL]: { create: jest.fn((attrs, content) => ({ type: 'cell', attrs, content })) },
+      [PARAGRAPH]: { create: jest.fn(() => ({ type: 'paragraph' })) },
+      tableRow: { create: jest.fn((_attrs, content) => ({ type: 'row', content })) },
+      [TABLE]: { create: jest.fn((_attrs, content) => ({ type: 'table', content })) },
+      text: jest.fn((t: string) => ({ type: 'text', text: t })),
+    };
+
+    mockTr = {
+      selection: { from: 5, to: 5, $head: { node: () => ({ nodeSize: 10 }) } },
+      doc: { nodeAt: jest.fn() },
+      insert: jest.fn().mockReturnThis(),
+      setSelection: jest.fn().mockReturnThis(),
+    };
+
+    mockState = {
+      tr: mockTr,
+      doc: { content: [] },
+      selection: mockTr.selection,
+      schema: { nodes: schemaNodes, text: schemaNodes.text },
+    };
+
+    mockDispatch = jest.fn();
+    mockView = { focus: jest.fn() };
+
+    cmd = new VignetteCommand();
   });
-  const directeditorprops = {state};
-  const dom = document.createElement('div');
 
-  const view = new EditorView(dom, directeditorprops);
-
-  it('should handle isEnabled and call __isEnabled', () => {
-    let vignettecommand = new VignetteCommand();
-    const spy = jest
-      .spyOn(vignettecommand, '__isEnabled')
-      .mockImplementation(() => {
-        return true;
-      });
-    vignettecommand.isEnabled(state, view);
-    expect(spy).toHaveBeenCalled();
+  test('isEnabled calls internal __isEnabled', () => {
+    const spy = jest.spyOn(cmd, '__isEnabled');
+    cmd.isEnabled(mockState, mockView);
+    expect(spy).toHaveBeenCalledWith(mockState, mockView);
   });
 
-  it('should handle __isEnabled', () => {
-    let vignettecommand = new VignetteCommand();
-    expect(vignettecommand.__isEnabled(state, view)).toBeTruthy();
+  test('execute should insert table and paragraph and call dispatch + view.focus', () => {
+    const insertTableSpy = jest.spyOn(cmd, 'insertTable').mockReturnValue(mockTr);
+    const insertParagraphSpy = jest.spyOn(cmd, 'insertParagraph').mockReturnValue(mockTr);
+
+    const result = cmd.execute(mockState, mockDispatch, mockView);
+    expect(result).toBe(true);
+    expect(insertTableSpy).toHaveBeenCalled();
+    expect(insertParagraphSpy).toHaveBeenCalled();
+    expect(mockDispatch).toHaveBeenCalledWith(mockTr);
+    expect(mockView.focus).toHaveBeenCalled();
   });
 
-  it('should handle vignette command insert table !tr.selection || !tr.doc', () => {
-    let transactions: Transaction = [] as unknown as Transaction;
-
-    const vignettecommand = new VignetteCommand();
-
-    expect(
-      vignettecommand.insertTable(transactions, schema, 1, 2)
-    ).toBeTruthy();
+  test('execute should still return true even without dispatch', () => {
+    const result = cmd.execute(mockState);
+    expect(result).toBe(true);
   });
-  it('should handle selection validation in insertTable', () => {
-    const vignettecommand = new VignetteCommand();
 
-    const sampleSchema = schema;
+  test('waitForUserInput should resolve undefined', async () => {
+    const result = await cmd.waitForUserInput(mockState, mockDispatch, mockView, {} as any);
+    expect(result).toBeUndefined();
+  });
 
-    const trWithCursorSelection = state.tr;
-    trWithCursorSelection.setSelection(
-      TextSelection.create(trWithCursorSelection.doc, 2)
+  test('executeWithUserInput should return false', () => {
+    expect(cmd.executeWithUserInput(mockState, mockDispatch, mockView, 'input')).toBe(false);
+  });
+
+  test('cancel should return null', () => {
+    expect(cmd.cancel()).toBeNull();
+  });
+
+  test('__isEnabled should always return true', () => {
+    expect(cmd.__isEnabled(mockState, mockView)).toBe(true);
+  });
+
+  test('insertTable should return tr unchanged if no selection', () => {
+    const tr = { doc: {}, selection: null };
+    const result = cmd.insertTable(tr as any, mockState.schema, 1, 1);
+    expect(result).toBe(tr);
+  });
+
+  test('insertTable should return tr unchanged if from !== to', () => {
+    const tr = { selection: { from: 1, to: 2 } };
+    const result = cmd.insertTable(tr as any, mockState.schema, 1, 1);
+    expect(result).toBe(tr);
+  });
+
+  test('insertTable should return tr unchanged if nodes missing', () => {
+    const badSchema = { nodes: { [TABLE]: null } };
+    const result = cmd.insertTable(mockTr, badSchema as any, 1, 1);
+    expect(result).toBe(mockTr);
+  });
+
+  test('insertTable creates correct nested structure and sets selection', () => {
+    const result = cmd.insertTable(mockTr, mockState.schema, 2, 2);
+    expect(schemaNodes[TABLE_CELL].create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        borderColor: DEF_BORDER_COLOR,
+        backgroundColor: '#dce6f2',
+        vignette: true,
+      }),
+      expect.anything()
     );
-    const resultWithCursorSelection = vignettecommand.insertTable(
-      trWithCursorSelection,
-      sampleSchema,
-      1,
-      2
-    );
-    expect(resultWithCursorSelection).toBeTruthy();
-
-    const trWithNonEmptySelection = state.tr;
-    trWithNonEmptySelection.setSelection(
-      TextSelection.create(trWithNonEmptySelection.doc, 1, 2)
-    );
-    const resultWithNonEmptySelection = vignettecommand.insertTable(
-      trWithNonEmptySelection,
-      sampleSchema,
-      1,
-      2
-    );
-
-    expect(resultWithNonEmptySelection).toBe(trWithNonEmptySelection);
+    expect(schemaNodes[PARAGRAPH].create).toHaveBeenCalled();
+    expect(schemaNodes.tableRow.create).toHaveBeenCalled();
+    expect(schemaNodes[TABLE].create).toHaveBeenCalled();
+    expect(mockTr.insert).toHaveBeenCalled();
+    expect(mockTr.setSelection).toHaveBeenCalled();
+    expect(TextSelection.create).toHaveBeenCalled();
+    expect(result).toBe(mockTr);
   });
 
-  it('should cancel', () => {
-    const command = new VignetteCommand();
-    expect(command.cancel()).toBeNull();
+  test('insertParagraph inserts paragraph when from === to', () => {
+    const result = cmd.insertParagraph(mockState, mockTr);
+    expect(schemaNodes[PARAGRAPH].create).toHaveBeenCalled();
+    expect(mockTr.insert).toHaveBeenCalled();
+    expect(result).toBe(mockTr);
   });
 
-  it('should render label', () => {
-    const command = new VignetteCommand();
-    expect(command.renderLabel()).toBeNull();
+  test('insertParagraph returns tr unchanged when from !== to', () => {
+    const badTr = { selection: { from: 1, to: 2 } };
+    const result = cmd.insertParagraph(mockState, badTr as any);
+    expect(result).toBe(badTr);
   });
 
-  it('should be active', () => {
-    const command = new VignetteCommand();
-    expect(command.isActive()).toBeTruthy();
+  test('renderLabel returns null', () => {
+    expect(cmd.renderLabel()).toBeNull();
   });
 
-  it('should execute Custom', () => {
-    const command = new VignetteCommand();
-    const mockState = null as unknown as EditorState;
-    const mockTr = {} as unknown as Transform;
-    expect(command.executeCustom(mockState, mockTr)).toBe(mockTr);
+  test('isActive returns true', () => {
+    expect(cmd.isActive()).toBe(true);
+  });
+
+  test('executeCustom returns tr unchanged', () => {
+    const tr = new Transform();
+    expect(cmd.executeCustom(mockState, tr)).toBe(tr);
   });
 });

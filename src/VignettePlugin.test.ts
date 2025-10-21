@@ -16,8 +16,8 @@ import { VignetteMenuPlugin } from './VignetteMenuPlugin';
 import { deleteTable } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
 
-jest.mock('../src/assets/dark/Icon_Vignette.svg', () => 'Icon SVG content');
-jest.mock('../src/assets/light/Icon_Vignette.svg', () => 'Icon SVG content');
+jest.mock('../src/assets/images/dark/Icon_Vignette.svg', () => 'Icon SVG content');
+jest.mock('../src/assets/images/light/Icon_Vignette.svg', () => 'Icon SVG content');
 describe('VignettePlugin', () => {
   const editor = createEditor(doc(p('<cursor>')), {
     plugins: [...VignettePlugins],
@@ -88,7 +88,7 @@ describe('VignettePlugin', () => {
   });
   it('should handle createCommand', () => {
     const tablebgcolorcommand = new TableBackgroundColorCommand();
-    expect(tablebgcolorcommand.getAttrName()).toEqual('background');
+    expect(tablebgcolorcommand.getAttrName()).toEqual('backgroundColor');
   });
 
   it('dom should have matching node attributes VignetteTableNodeSpec', () => {

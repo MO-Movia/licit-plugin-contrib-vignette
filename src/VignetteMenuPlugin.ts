@@ -91,14 +91,14 @@ export class VignetteView {
   static isVignette(state: EditorState, actionNode: Node) {
     let vignette = false;
     if (state.selection instanceof CellSelection) {
-      if (state.selection.$anchorCell.node(-1).attrs.vignette) {
+      if (state.selection?.$anchorCell?.node(-1)?.attrs.vignette) {
         vignette = true;
       }
     }
     if (actionNode?.attrs.vignette) {
       vignette = true;
     }
-    if (state.selection.$anchor.node(1).attrs.vignette) {
+    if (state.selection.$anchor?.node(1)?.attrs.vignette) {
       vignette = true;
     }
     return vignette;
