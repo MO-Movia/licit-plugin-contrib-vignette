@@ -17,6 +17,14 @@ import {ColorEditor} from '@modusoperandi/color-picker';
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 
 export class TableColorCommand extends UICommand {
+  executeCustomStyleForTable(
+    _state: EditorState,
+    tr: Transform,
+    _from: number,
+    _to: number
+  ): Transform {
+    return tr;
+  }
   _popUp?: PopUpHandle = null;
 
   getAttrName = (): string => {
@@ -79,7 +87,7 @@ export class TableColorCommand extends UICommand {
     state: EditorState,
     dispatch?: (tr: Transform) => void,
     view?: EditorView,
-    color?: { color, selectedOption }
+    color?: {color; selectedOption}
   ): boolean => {
     if (dispatch && color?.color !== undefined) {
       const cmd = setCellAttr(this.getAttrName(), color.color);

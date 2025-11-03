@@ -7,6 +7,15 @@ import * as React from 'react';
 import {Transform} from 'prosemirror-transform';
 
 export class VignetteCommand extends UICommand {
+  executeCustomStyleForTable(
+    _state: EditorState,
+    tr: Transform,
+    _from: number,
+    _to: number
+  ): Transform {
+    return tr;
+  }
+
   isEnabled = (state: EditorState, view?: EditorView): boolean => {
     return this.__isEnabled(state, view);
   };
@@ -99,7 +108,7 @@ export class VignetteCommand extends UICommand {
     const tableNode = table.create({vignette: true}, Fragment.from(rowNodes));
     tr = tr.insert(from, Fragment.from(tableNode));
 
-    const selection = TextSelection.create(tr.doc, from , from + 5);
+    const selection = TextSelection.create(tr.doc, from, from + 5);
 
     tr = tr.setSelection(selection);
     return tr;
