@@ -108,7 +108,7 @@ export class VignetteCommand extends UICommand {
     const tableNode = table.create({vignette: true}, Fragment.from(rowNodes));
     tr = tr.insert(from, Fragment.from(tableNode));
 
-    const selection = TextSelection.create(tr.doc, from, from + 5);
+    const selection = TextSelection.create(tr.doc, from + 4, from + 5);
 
     tr = tr.setSelection(selection);
     return tr;
