@@ -5,8 +5,9 @@ import {TABLE, VIGNETTE} from './Constants';
 export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
   ...nodespec,
   attrs: {
-    marginLeft: {default: null},
-    vignette: {default: false},
+    ...nodespec.attrs,
+    marginLeft: { default: null },
+    vignette: { default: false },
   },
   parseDOM: [
     {
@@ -32,8 +33,8 @@ export const VignetteTableNodeSpec = (nodespec: NodeSpec): NodeSpec => ({
     // `TableNodeView`. This method is only called when user selects a
     // table node and copies it, which triggers the "serialize to HTML" flow
     //  that calles this method.
-    const {marginLeft, vignette} = node.attrs;
-    const domAttrs = {vignette};
+    const { marginLeft } = node.attrs;
+    const domAttrs = { ...node.attrs };
     let style = 'border: none';
     if (marginLeft) {
       style += `margin-left: ${marginLeft}px`;
