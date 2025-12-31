@@ -134,6 +134,12 @@ describe('Table color command', () => {
     expect(tableColorCommand.executeCustom(mockState, mockTr)).toBe(mockTr);
   });
 
+    it('should execute Custom style For table', () => {
+    const mockState = null as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(tableColorCommand.executeCustomStyleForTable(mockState, mockTr)).toBe(mockTr);
+  });
+
   it('should execute with user input', () => {
     const mockState = null as unknown as EditorState;
     expect(tableColorCommand.executeWithUserInput(mockState)).toBeFalsy();

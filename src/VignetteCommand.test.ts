@@ -93,4 +93,11 @@ describe('vignette command', () => {
     const mockTr = {} as unknown as Transform;
     expect(command.executeCustom(mockState, mockTr)).toBe(mockTr);
   });
+
+  it('should execute Custom style for table', () => {
+    const command = new VignetteCommand();
+    const mockState = null as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(command.executeCustomStyleForTable(mockState, mockTr)).toBe(mockTr);
+  });
 });
