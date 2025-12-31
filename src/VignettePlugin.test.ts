@@ -133,6 +133,7 @@ describe('VignettePlugin', () => {
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
       'table',
       {
+        marginLeft: '10',
         style: 'border: nonemargin-left: 10px',
         vignette: 'true',
       },
@@ -141,6 +142,7 @@ describe('VignettePlugin', () => {
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
       'table',
       {
+        marginLeft: '10',
         style: 'border: nonemargin-left: 10px',
         vignette: 'true',
       },
@@ -167,8 +169,7 @@ describe('VignettePlugin', () => {
     expect(VignetteTableNodeSpec(nodeSpec1).toDOM(node)).toStrictEqual([
       'table',
       {
-        style: 'border: none',
-        vignette: undefined,
+        style: 'border: none',         
       },
       0,
     ]);
@@ -176,7 +177,6 @@ describe('VignettePlugin', () => {
       'table',
       {
         style: 'border: none',
-        vignette: undefined,
       },
       0,
     ]);

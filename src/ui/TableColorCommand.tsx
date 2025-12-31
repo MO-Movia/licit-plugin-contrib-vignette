@@ -1,9 +1,9 @@
 // @flow
 
-import {EditorState} from 'prosemirror-state';
-import {setCellAttr} from 'prosemirror-tables';
-import {Transform} from 'prosemirror-transform';
-import {EditorView} from 'prosemirror-view';
+import { EditorState } from 'prosemirror-state';
+import { setCellAttr } from 'prosemirror-tables';
+import { Transform } from 'prosemirror-transform';
+import { EditorView } from 'prosemirror-view';
 
 import {
   PopUpHandle,
@@ -13,8 +13,8 @@ import {
   MARK_TEXT_COLOR,
   RuntimeService,
 } from '@modusoperandi/licit-ui-commands';
-import {ColorEditor} from '@modusoperandi/color-picker';
-import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
+import { ColorEditor } from '@modusoperandi/color-picker';
+import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
 
 export class TableColorCommand extends UICommand {
   _popUp?: PopUpHandle = null;
@@ -44,8 +44,8 @@ export class TableColorCommand extends UICommand {
     if (!(target instanceof HTMLElement)) {
       return Promise.resolve(undefined);
     }
-    const {doc, selection, schema} = _state;
-    const {from, to} = selection;
+    const { doc, selection, schema } = _state;
+    const { from, to } = selection;
     const markType = schema.marks[MARK_TEXT_COLOR];
     const result = findNodesWithSameMark(doc, from, to, markType);
     const hex = result?.mark.attrs.color ?? null;
@@ -58,7 +58,7 @@ export class TableColorCommand extends UICommand {
     return new Promise((resolve) => {
       this._popUp = createPopUp(
         ColorEditor,
-        {hex, runtime: RuntimeService.Runtime, Textcolor},
+        { hex, runtime: RuntimeService.Runtime, Textcolor },
         {
           anchor,
           position: atAnchorRight,
@@ -100,6 +100,9 @@ export class TableColorCommand extends UICommand {
     return true;
   }
   executeCustom(_state: EditorState, tr: Transform): Transform {
+    return tr;
+  }
+  executeCustomStyleForTable(_state: EditorState, tr: Transform): Transform {
     return tr;
   }
 }

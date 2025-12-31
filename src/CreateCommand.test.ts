@@ -45,6 +45,13 @@ describe('create command', () => {
     expect(command.executeCustom(mockState, mockTr, 0, 0)).toBe(mockTr);
   });
 
+  
+  it('should execute Custom', () => {
+    const mockState = null as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(command.executeCustom(mockState, mockTr, 0, 0)).toBe(mockTr);
+  });
+  
   it('should execute with user input', () => {
     const mockState = null as unknown as EditorState;
     expect(command.executeWithUserInput(mockState)).toBeFalsy();
