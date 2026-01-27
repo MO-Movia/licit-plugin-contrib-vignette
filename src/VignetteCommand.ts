@@ -136,7 +136,7 @@ export class VignetteCommand extends UICommand {
   }
 
   isActive(): boolean {
-    return true;
+    return false;
   }
   executeCustom(_state: EditorState, tr: Transform): Transform {
     return tr;

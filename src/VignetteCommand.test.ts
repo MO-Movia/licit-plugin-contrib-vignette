@@ -151,7 +151,7 @@ describe('VignetteCommand', () => {
   });
 
   test('isActive returns true', () => {
-    expect(cmd.isActive()).toBe(true);
+    expect(cmd.isActive()).toBe(false);
   });
 
   test('executeCustom returns tr unchanged', () => {
