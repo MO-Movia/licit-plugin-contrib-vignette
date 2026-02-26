@@ -98,7 +98,11 @@ export class VignetteView {
     if (actionNode?.attrs.vignette) {
       vignette = true;
     }
-    if (state.selection.$anchor?.node(1)?.attrs.vignette) {
+    let parentNode = state.selection.$anchor?.node(1);
+    if (parentNode.type.name === 'landscape_section') {
+      parentNode = state.selection.$anchor?.node(2);
+    }
+    if (parentNode?.attrs.vignette) {
       vignette = true;
     }
     return vignette;
