@@ -1,9 +1,12 @@
 import {VignetteCommand} from './VignetteCommand';
 import {schema} from 'prosemirror-test-builder';
+import {Schema} from 'prosemirror-model';
+import {tableNodes} from 'prosemirror-tables';
 import {EditorState, Transaction, TextSelection} from 'prosemirror-state';
 import {createEditor, doc, p} from 'jest-prosemirror';
 import {EditorView} from 'prosemirror-view';
 import {Transform} from 'prosemirror-transform';
+import {VignettePlugin} from './VignettePlugin';
 
 describe('vignette command', () => {
   const editor = createEditor(doc(p('<cursor>')), {});
@@ -99,5 +102,64 @@ describe('vignette command', () => {
     const mockState = null as unknown as EditorState;
     const mockTr = {} as unknown as Transform;
     expect(command.executeCustomStyleForTable(mockState, mockTr)).toBe(mockTr);
+  });
+
+  it('should insert vignette inside a landscape section without an out-of-range position', () => {
+    const baseSchema = new Schema({
+      nodes: {
+        doc: {content: 'block+'},
+        paragraph: {
+          content: 'inline*',
+          group: 'block',
+          parseDOM: [{tag: 'p'}],
+          toDOM: () => ['p', 0],
+        },
+        landscape_section: {
+          content: 'block+',
+          group: 'block',
+          defining: true,
+          isolating: true,
+          parseDOM: [{tag: 'section.section-landscape'}],
+          toDOM: () => ['section', {class: 'section-landscape'}, 0],
+        },
+        text: {group: 'inline'},
+        ...tableNodes({
+          tableGroup: 'block',
+          cellContent: 'block+',
+          cellAttributes: {},
+        }),
+      },
+      marks: {},
+    });
+    const effectiveSchema = new VignettePlugin().getEffectiveSchema(baseSchema);
+    const landscape = effectiveSchema.nodes.landscape_section.create(
+      null,
+      effectiveSchema.nodes.paragraph.create()
+    );
+    const landscapeDoc = effectiveSchema.nodes.doc.create(null, landscape);
+    const landscapeState = EditorState.create({
+      doc: landscapeDoc,
+      selection: TextSelection.create(landscapeDoc, 2),
+      schema: effectiveSchema,
+    });
+
+    const command = new VignetteCommand();
+    let nextState = landscapeState;
+
+    expect(() => {
+      command.execute(
+        landscapeState,
+        tr => {
+          nextState = landscapeState.apply(tr);
+        },
+        null
+      );
+    }).not.toThrow();
+
+    const landscapeNode = nextState.doc.firstChild;
+    const tableNode = landscapeNode.child(1);
+    expect(tableNode.type.name).toBe('table');
+    expect(tableNode.attrs.vignette).toBe(true);
+    expect(landscapeNode.child(2).type.name).toBe('paragraph');
   });
 });

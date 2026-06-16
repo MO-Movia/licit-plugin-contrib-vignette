@@ -115,11 +115,22 @@ export class VignetteCommand extends UICommand {
     if (from !== to) {
       return tr;
     }
+
+    const $head = tr.selection.$head;
+    let tableDepth = -1;
+    for (let depth = $head.depth; depth > 0; depth--) {
+      if ($head.node(depth).type.name === TABLE) {
+        tableDepth = depth;
+        break;
+      }
+    }
+
+    if (tableDepth < 0) {
+      return tr;
+    }
+
     const paragraphNode = paragraph.create({}, textNode, null);
-    tr = tr.insert(
-      from + tr.selection.$head.node(1).nodeSize - 4,
-      Fragment.from(paragraphNode)
-    );
+    tr = tr.insert($head.after(tableDepth), Fragment.from(paragraphNode));
     return tr;
   }
   renderLabel() {
